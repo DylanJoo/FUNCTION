@@ -2,3 +2,4 @@ models/ckpt/
 **/__pycache__/
 wandb/
 logs/
+datasets/

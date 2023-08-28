@@ -53,9 +53,10 @@ def main():
     # Data
     ## Dataset
     dataset = get_qrecc_dataset(data_args.train_file)
-    n_examples = len(dataset['train'])
     if training_args.do_eval:
-        dataset = dataset['train'].train_test_split(test_size=100, seed=1997)
+        dataset['test'] = get_qrecc_dataset(
+                data_args.eval_file
+        )['train'].shuffle(seed=42).select(list(range(300)))
     else:
         dataset['test'] = None
 
