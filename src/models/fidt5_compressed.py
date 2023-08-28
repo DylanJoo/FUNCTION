@@ -103,6 +103,7 @@ class FiDT5Stack(T5Stack):
                 attention_mask=attention_mask, 
                 **kwargs
         )
+        print(encoder_outputs['last_hidden_state'].shape)
 
         ## Conversations
         encoder_outputs_conv = super().forward(
@@ -110,20 +111,23 @@ class FiDT5Stack(T5Stack):
                 attention_mask=attention_mask_conv, 
                 **kwargs
         )
-        ### mean embeddings
+        ### Convert conversational token embeddings
+        ### into conversational sentence embeddins
+        ### B N L H  --> B N H (mean embeddings)
         conversation_embeds = \
                 encoder_outputs_conv['last_hidden_state'].view(B, N, L, -1)
         conversation_attn_mask = attention_mask_conv.view(B, N, L)
-
         compressed_embeds = self.mean_pooling(
                 conversation_embeds, conversation_attn_mask, 2
-        ) # B N L H  --> B N H
+        ) 
+        print(conversation_embeds.shape)
 
         ## [MERGE] combine the token-level 
         encoder_outputs_conv['last_hidden_state'] = torch.cat([
             encoder_outputs['last_hidden_state'], 
             compressed_embeds
         ], dim=1)
+        print(encoder_outputs_conv['last_hidden_state'].shape)
 
         return encoder_outputs
 

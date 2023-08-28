@@ -1,7 +1,7 @@
 TRAIN_FILE=/tmp2/jhju/personalized.conv.search/data/qrecc/qrecc_train.json
 # 22 G
-export CUDA_VISIBLE_DEVICES=1
 train_flatten:
+	export CUDA_VISIBLE_DEVICES=1
 	python3 train_flatten.py \
      		--model_name_or_path google/flan-t5-base \
      		--tokenizer_name google/flan-t5-base \
@@ -26,8 +26,8 @@ train_flatten:
 	        --report_to wandb
 
 # 15 G
-export CUDA_VISIBLE_DEVICES=2
 train_compressed:
+	export CUDA_VISIBLE_DEVICES=1
 	python3 train_compressed.py \
      		--model_name_or_path google/flan-t5-base \
      		--tokenizer_name google/flan-t5-base \
@@ -51,3 +51,18 @@ train_compressed:
 	        --conversation_prefix 'user: {0} system: {1}' \
 	        --warmup_steps 800 \
 	        --report_to wandb
+
+generate_by_fid_flat:
+	python3 generate.py \
+		--model_name google/flan-t5-base \
+		--model_path models/ckpt/FUNCTION-base-flatten/checkpoint-10000 \
+		--input_file ${TRAIN_FILE} \
+		--output_jsonl results/qrecc_train.prediction.jsonl \
+		--device cuda:1 \
+		--batch_size 2 \
+		--instruction_prefix 'Rewrite the query based on the user-system conversation. query: {} conversation: ' \
+		--conversation_prefix 'user: {0} system: {1}' \
+		--n_conversations 8 \
+		--num_beams 5 \
+		--max_src_length 512 \
+		--max_tgt_length 32

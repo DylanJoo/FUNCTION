@@ -19,6 +19,8 @@ def get_qrecc_dataset(path):
     dataset = dataset.map(
             lambda x: {'Conversation': split_context(x['Context'])}
     )
+    dataset = datsaet.map(lambda ex: {"id": f"{ex['Conversation_source']}_{ex['Conversation_no']}_{ex['Turn_no']}"})
+
     return dataset
 
 @dataclass
