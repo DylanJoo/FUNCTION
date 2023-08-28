@@ -7,11 +7,16 @@ import numpy as np
 from tqdm import tqdm
 from datasets import load_dataset
 from torch.utils.data import DataLoader
-from transformers import AutoConfig, AutoTokenizer
+from transformers import (
+    AutoConfig, 
+    AutoTokenizer,
+    T5ForConditionalGeneration
+)
 from models import FiDT5_flat, FiDT5_comp
 from data import (
     DataCollatorForFunctionFlatten, 
     DataCollatorForFunctionCompressed,
+    DataCollatorForNTR,
     get_qrecc_dataset
 )
 
@@ -52,7 +57,7 @@ if __name__ == "__main__":
     config = AutoConfig.from_pretrained(args.model_name)
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
-    ## checkpoints and datacollator
+    ## checkpoints and }atacollator
     if 'flat' in args.model_path.lower():
         model = FiDT5_flat.from_pretrained(args.model_path)
         data_collator = DataCollatorForFunctionFlatten(
@@ -73,6 +78,14 @@ if __name__ == "__main__":
                 n_conversations=args.n_conversations,
                 instruction_prefix=args.instruction_prefix,
                 conversation_prefix=args.conversation_prefix
+        )
+    if 'castorini' in args.model_path.lower():
+        model = T5ForConditionalGeneration.from_pretrained(args.model_path)
+        data_collator = DataCollatorForNTR(
+                tokenizer=tokenizer,
+                max_src_length=args.max_src_length,
+                max_tgt_length=args.max_tgt_length,
+                n_conversations=args.n_conversations
         )
     model.to(args.device)
     model.eval()

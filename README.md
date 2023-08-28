@@ -40,9 +40,13 @@ google/flan-t5-base
 DylanJHJ/fidt5-base-nq
 ```
 
-
 - Baseline
 A popular baseline is T5 fine-tuned on CANARD dataset. Please refer to their [paper](#), [repo](#) and [model checkpoints](castorini/t5-base-canard).
 
 
 ### Evaluation
+| Model | BLEU | ROUGE1 | ROUGE2 | ROUGEL |
+|-------|------|--------|--------|--------|
+| Function-base | 0.6204 | 0.8317 | 0.7329 | 0.8185 |
+| T5-NTR        | 0.5757 | 0.8115 | 0.6995 | 0.7915 | 
+|-------|------|--------|--------|--------|

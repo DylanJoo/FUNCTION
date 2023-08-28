@@ -1,8 +1,8 @@
 TRAIN_FILE=/home/jhju/datasets/qrecc/qrecc_train.json
 EVAL_FILE=/home/jhju/datasets/qrecc/qrecc_test.json
 # 22 G
-export CUDA_VISIBLE_DEVICES=2
 train_flatten:
+	export CUDA_VISIBLE_DEVICES=2
 	python3 train_flatten.py \
      		--model_name_or_path google/flan-t5-base \
      		--tokenizer_name google/flan-t5-base \
@@ -55,7 +55,7 @@ train_compressed:
 	        --warmup_steps 800 \
 	        --report_to wandb
 
-generate_by_fid_flat:
+generate_by_function_flat:
 	python3 generate.py \
 		--model_name google/flan-t5-base \
 		--model_path models/ckpt/FUNCTION-base-flatten/checkpoint-10000 \
@@ -68,4 +68,17 @@ generate_by_fid_flat:
 		--n_conversations 8 \
 		--num_beams 5 \
 		--max_src_length 256 \
+		--max_tgt_length 32
+
+generate_by_t5ntr:
+	python3 generate.py \
+		--model_name castorini/t5-base-canard \
+		--model_path castorini/t5-base-canard \
+		--input_file dataset/qrecc_test.json \
+		--output_jsonl results/qrecc_test.ntr.prediction.jsonl \
+		--device cuda:0 \
+		--batch_size 4 \
+		--n_conversations 3 \
+		--num_beams 5 \
+		--max_src_length 512 \
 		--max_tgt_length 32

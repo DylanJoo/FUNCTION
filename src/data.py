@@ -165,6 +165,55 @@ class DataCollatorForFunctionCompressed:
         ).input_ids
 
         return inputs
-        # inputs['input_ids_conv'] = inputs_conv['input_ids'].view(
-        #         -1, self.n_conversations, inputs['input_ids'].size(-1)
-        # )
+
+@dataclass
+class DataCollatorForNTR:
+    tokenizer: Union[PreTrainedTokenizerBase] = None
+    pad_to_multiple_of: Optional[int] = None
+    padding: Union[bool, str, PaddingStrategy] = True
+    truncation: Union[bool, str] = True
+    max_src_length: Optional[int] = 512
+    max_tgt_length: Optional[int] = 32
+    n_conversations: Optional[int] = 1
+
+    def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """ Usage:
+        Source input
+                {utterance} ||| {response} ||| {request}
+
+        Target output
+            {rewritten query}
+        """
+        # preparing source/target
+        sources, targets = [], []
+        for batch in features:
+            history = []
+            ## Focal question, utterance
+            utterance = batch['Question']
+            ## user-system conversation 
+            avail_conversation = batch['Conversation']
+            for i, conversation in enumerate(avail_conversation[:self.n_conversations]):
+                history.append(conversation[0]) # user utterance
+                history.append(conversation[1]) # system response
+            sources.append(" ||| ".join( history + [utterance] ))
+
+            ## rewritten questions
+            targets.append(batch['Rewrite'])
+
+        # tokenizing src/tgt
+        inputs = self.tokenizer(
+                sources,
+                max_length=self.max_src_length,
+                truncation=self.truncation,
+                padding=self.padding,
+                return_tensors='pt'
+        )
+        inputs['labels'] = self.tokenizer(
+                targets,
+                max_length=self.max_tgt_length,
+                truncation=self.truncation,
+                padding=self.padding,
+                return_tensors='pt'
+        ).input_ids
+
+        return inputs

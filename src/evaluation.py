@@ -17,12 +17,12 @@ def get_score(evaluate, predictions, references, metric_key=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--metric", action='append', default=[])
-    parser.add_argument("--pred_jsonl", type=str, default='prediction.jsonl')
+    parser.add_argument("--jsonl", type=str, default='prediction.jsonl')
     args = parser.parse_args()
 
     predictions = []
     references = []
-    with open(args.pred_jsonl, 'r') as f:
+    with open(args.jsonl, 'r') as f:
         for line in tqdm(f):
             data = json.loads(line.strip())
             predictions.append(data['generated_question'])
