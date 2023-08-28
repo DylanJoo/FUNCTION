@@ -9,7 +9,7 @@ from transformers import (
 from datasets import load_dataset
 
 # customized modules
-from data import DataCollatorForFunctionFlat, get_qrecc_dataset
+from data import DataCollatorForFunctionFlatten, get_qrecc_dataset
 from models import FiDT5_flat
 from arguments import ModelArgs, DataArgs, TrainArgs
 
@@ -39,7 +39,7 @@ def main():
 
     # Data
     ## Datacollator
-    data_collator = DataCollatorForFunctionFlat(
+    data_collator = DataCollatorForFunctionFlatten(
             tokenizer=tokenizer, 
             max_src_length=data_args.max_src_length,
             max_tgt_length=data_args.max_tgt_length,

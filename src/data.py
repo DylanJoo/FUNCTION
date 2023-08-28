@@ -22,7 +22,7 @@ def get_qrecc_dataset(path):
     return dataset
 
 @dataclass
-class DataCollatorForFunctionFlat:
+class DataCollatorForFunctionFlatten:
     tokenizer: Union[PreTrainedTokenizerBase] = None
     pad_to_multiple_of: Optional[int] = None
     padding: Union[bool, str, PaddingStrategy] = True
@@ -32,7 +32,6 @@ class DataCollatorForFunctionFlat:
     n_conversations: Optional[int] = 1
     instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. request: {} conversation: '
     conversation_prefix: Optional[str] = 'user: {0} sytem: {1}'
-    retrieval_enhanced: Union[bool, str] = False
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
         """ The expected input would be:
@@ -105,7 +104,6 @@ class DataCollatorForFunctionCompressed:
     n_conversations: Optional[int] = 1
     instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. request: {} conversation: '
     conversation_prefix: Optional[str] = 'user: {0} sytem: {1}'
-    retrieval_enhanced: Union[bool, str] = False
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
         """ The expected input would be:

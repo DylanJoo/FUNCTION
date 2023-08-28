@@ -3,14 +3,14 @@ import multiprocessing
 from transformers import (
     AutoTokenizer,
     HfArgumentParser,
-    GenerationConfig
+    GenerationConfig,
+    Trainer
 )
 from datasets import load_dataset
 
 # customized modules
-from data import DataCollatorForStarter
-from trainers import TrainerForStarter
-from models import FiDT5
+from data import DataCollatorForFunctionCompressed, get_qrecc_dataset
+from models import FiDT5_comp
 from arguments import ModelArgs, DataArgs, TrainArgs
 
 import os
@@ -31,7 +31,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name)
 
     # Model
-    model = FiDT5.from_pretrained(model_args.model_name_or_path)
+    model = FiDT5_comp.from_pretrained(model_args.model_name_or_path)
 
     # Generation config
     generation_config = GenerationConfig.from_model_config(model.config)
@@ -39,29 +39,29 @@ def main():
 
     # Data
     ## Datacollator
-    data_collator = DataCollatorForStarter(
-            retrieval_enhanced=model_args.retrieval_enhanced,
+    data_collator = DataCollatorForFunctionCompressed(
             tokenizer=tokenizer, 
-            max_src_length=data_args.max_p_length,
-            max_tgt_length=data_args.max_q_length,
+            max_src_length=data_args.max_src_length,
+            max_tgt_length=data_args.max_tgt_length,
+            max_src_conv_length=data_args.max_src_conv_length,
+            n_conversations=model_args.n_conversations,
+            instruction_prefix=training_args.instruction_prefix,
+            conversation_prefix=training_args.conversation_prefix,
             truncation=True,
             padding=True,
-            sep_token='</s>',
-            star_encoder=star_encoder
     )
 
     # Data
     ## Dataset
-    dataset = load_dataset('json', data_files=data_args.train_file)
-    dataset = dataset.map(lambda ex: {
-        'statement_aware_embeds': torch.tensor(ex['statement_aware_embeds'])
-    })
+    dataset = get_qrecc_dataset(data_args.train_file)
     n_examples = len(dataset['train'])
     if training_args.do_eval:
         dataset = dataset['train'].train_test_split(test_size=100, seed=1997)
+    else:
+        dataset['test'] = None
 
     # Trainer
-    trainer = TrainerForStarter(
+    trainer = Trainer(
             model=model, 
             args=training_args,
             train_dataset=dataset['train'],

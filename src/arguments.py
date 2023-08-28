@@ -26,8 +26,9 @@ class DataArgs:
     preprocessing_num_workers: Optional[int] = field(default=None)
     train_file: Optional[str] = field(default=None)
     eval_file: Optional[str] = field(default=None)
-    max_src_length: int = field(default=320)
+    max_src_length: int = field(default=64)
     max_tgt_length: int = field(default=32)
+    max_src_conv_length: int = field(default=128)
 
 @dataclass
 class TrainArgs(Seq2SeqTrainingArguments):
