@@ -53,6 +53,7 @@ def main():
     # Data
     ## Dataset
     dataset = get_qrecc_dataset(data_args.train_file)
+    n_examples = len(dataset['train'])
     if training_args.do_eval:
         dataset['test'] = get_qrecc_dataset(
                 data_args.eval_file
