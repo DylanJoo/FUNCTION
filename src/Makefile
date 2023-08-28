@@ -1,8 +1,9 @@
 TRAIN_FILE=/home/jhju/datasets/qrecc/qrecc_train.json
 EVAL_FILE=/home/jhju/datasets/qrecc/qrecc_test.json
+
 # 22 G
+export CUDA_VISIBLE_DEVICES=2
 train_flatten:
-	export CUDA_VISIBLE_DEVICES=2
 	python3 train_flatten.py \
      		--model_name_or_path google/flan-t5-base \
      		--tokenizer_name google/flan-t5-base \
@@ -27,9 +28,9 @@ train_flatten:
 	        --warmup_steps 800 \
 	        --report_to wandb
 
-# 15 G
+# 17 G
+export CUDA_VISIBLE_DEVICES=2
 train_compressed:
-	export CUDA_VISIBLE_DEVICES=2
 	python3 train_compressed.py \
      		--model_name_or_path google/flan-t5-base \
      		--tokenizer_name google/flan-t5-base \
@@ -49,7 +50,7 @@ train_compressed:
 	        --do_train \
 	        --do_eval \
 	        --optim adafactor \
-	        --n_conversations 4 \
+	        --n_conversations 6 \
 	        --instruction_prefix 'Rewrite the query based on the user-system conversation. query: {} conversation: ' \
 	        --conversation_prefix 'user: {0} system: {1}' \
 	        --warmup_steps 800 \
