@@ -58,7 +58,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
     ## checkpoints and }atacollator
-    if 'flat' in args.model_path.lower():
+    if 'flatten' in args.model_path.lower():
         model = FiDT5_flat.from_pretrained(args.model_path)
         data_collator = DataCollatorForFunctionFlatten(
                 tokenizer=tokenizer, 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
                 instruction_prefix=args.instruction_prefix,
                 conversation_prefix=args.conversation_prefix
         )
-    if 'comp' in args.model_path.lower():
+    if 'compressed' in args.model_path.lower():
         model = FiDT5_comp.from_pretrained(args.model_path)
         data_collator = DataCollatorForFunctionCompressed(
                 tokenizer=tokenizer, 

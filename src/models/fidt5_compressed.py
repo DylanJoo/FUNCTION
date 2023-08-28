@@ -51,7 +51,6 @@ class FiDT5(T5ForConditionalGeneration):
         :param input_ids_conv: tokenized input_ids for (multi-turn) conversations.
         :param attention_mask_conv: the mask for (multi-turn) conversations.
         """
-
         if encoder_outputs is None:
             encoder_outputs = self.encoder(
                     input_ids=input_ids,
@@ -61,7 +60,7 @@ class FiDT5(T5ForConditionalGeneration):
             )
 
         # expand attention mask
-        attenion_mask = self._expand(attention_mask, input_ids_conv.shape[0])
+        attenion_mask = self._expand(attention_mask)
 
         return super().forward(
                 input_ids=input_ids,
@@ -70,13 +69,13 @@ class FiDT5(T5ForConditionalGeneration):
                 **kwargs
         )
 
-    def _expand(self, mask, n_conversations=1):
+    def _expand(self, mask, n_conversations=None):
+        n_conversations = n_conversations or self.encoder.n_conversations
         additional_mask = torch.ones(
                 (mask.size(0), n_conversations), 
                 device=mask.device
         )
-        mask = torch.cat([additional_mask, mask], -1)
-        return mask
+        return torch.cat([mask, additional_mask], -1)
 
 class FiDT5Stack(T5Stack):
 
@@ -96,6 +95,7 @@ class FiDT5Stack(T5Stack):
         B = input_ids.size(0)
         N = input_ids_conv.size(0) // B
         L = input_ids_conv.size(1)
+        self.n_conversations = N
 
         ## Utterances 
         encoder_outputs = super().forward(
@@ -103,7 +103,6 @@ class FiDT5Stack(T5Stack):
                 attention_mask=attention_mask, 
                 **kwargs
         )
-        print(encoder_outputs['last_hidden_state'].shape)
 
         ## Conversations
         encoder_outputs_conv = super().forward(
@@ -120,14 +119,12 @@ class FiDT5Stack(T5Stack):
         compressed_embeds = self.mean_pooling(
                 conversation_embeds, conversation_attn_mask, 2
         ) 
-        print(conversation_embeds.shape)
 
         ## [MERGE] combine the token-level 
         encoder_outputs_conv['last_hidden_state'] = torch.cat([
             encoder_outputs['last_hidden_state'], 
             compressed_embeds
         ], dim=1)
-        print(encoder_outputs_conv['last_hidden_state'].shape)
 
         return encoder_outputs
 
