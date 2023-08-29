@@ -91,10 +91,10 @@ generate_by_t5ntr:
 		--model_name castorini/t5-base-canard \
 		--model_path castorini/t5-base-canard \
 		--input_file ${EVAL_FILE} \
-		--output_jsonl results/qrecc_test.ntr.prediction.jsonl \
+		--output_jsonl results/qrecc_test.ntr_8.prediction.jsonl \
 		--device cuda \
 		--batch_size 4 \
-		--n_conversations 3 \
+		--n_conversations 8 \
 		--num_beams 5 \
 		--max_src_length 512 \
 		--max_tgt_length 32

@@ -235,7 +235,7 @@ class DataCollatorForNTR:
             avail_conversation = batch['Conversation']
 
             i = 0
-            while i < self.n_conversations:
+            while i < min(len(avail_conversation), self.n_conversations):
                 conversation = avail_conversation.pop(0)
 
                 if len(conversation) == 1: 

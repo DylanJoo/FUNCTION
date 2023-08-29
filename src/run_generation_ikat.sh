@@ -2,7 +2,7 @@ EVAL_FILE=dataset/2023_train_topics.json
 
 export CUDA_VISIBLE_DEVICES=1
 
-N_HISTORY=3
+N_HISTORY=1
 python3 generate_ikat.py \
     --model_name castorini/t5-base-canard \
     --model_path castorini/t5-base-canard \
