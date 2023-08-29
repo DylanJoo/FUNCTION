@@ -8,7 +8,6 @@ from transformers.tokenization_utils_base import (
 from datasets import load_dataset
 
 def get_qrecc_dataset(path):
-
     def split_context(context):
         context_list = []
         while len(context) >= 2:
@@ -22,6 +21,46 @@ def get_qrecc_dataset(path):
     dataset = dataset.map(lambda ex: {"id": f"{ex['Conversation_source']}_{ex['Conversation_no']}_{ex['Turn_no']}"})
 
     return dataset
+
+def get_ikat_dataset(path, resolved=True, concat_ptkb=False):
+    dataset = load_dataset('json', data_files=path)
+
+    for topic in data:
+        ptkbs = list(topic['ptkb'].values())
+
+        history = []
+        data = {}
+        for turn in turns:
+            # turn
+            topic_turn_id = f"{topic['number']}_{turn['turn_id']}"
+            utterance = turn['utterance']
+            response = turn['response']
+
+            # collect data
+            data['id'] = topic_turn_id
+            ## qrecc: question / conversations/ rewrite
+            data['Question'] = utterance
+            data['Conversation'] = history
+            data['Rewrite'] = turn['resolved_utterance']
+            data['PTKBS'] = ptkbs
+            data['selected_ptkbs'] = [\
+                    data['PTKBS'][i] for i in turn['ptkb_provenance']\
+            ]
+
+            # historical utterances
+            history.append([utterance, resolved])
+
+            if concat_ptkb: 
+                # use all ptkbs
+                # pick few ptkb
+                if selected_ptkb:
+                    if isinstance(selected_ptkb, list):
+                        selected_ptkb = [ptkbs[p-1] for p in selected_ptkb]
+                        selected_ptkb = " ||| ".join(selected_ptkb)
+                    else:
+                        selected_ptkb = ptkbs[selected_ptkb-1]
+
+    return data_dict
 
 @dataclass
 class DataCollatorForFunctionFlatten:

@@ -45,10 +45,9 @@ A popular baseline is T5 fine-tuned on CANARD dataset. Please refer to their [pa
 
 
 ### Evaluation
-| Model | BLEU | ROUGE1 | ROUGE2 | ROUGEL | DONE |
+| Model | BLEU | ROUGE1 | ROUGE2 | ROUGEL | \# CONV. |
 |-------|------|--------|--------|--------|------|
-| Function-base (flat) | 0.6204 | 0.8317 | 0.7329 | 0.8185 | <ul><li>[x]</li><li> | 
-| T5-NTR               | 0.5440 | 0.8000 | 0.6828 | 0.7790 | <ul><li>[x]</li><li> | 
-| Function-base (comp) | 0.5678 | 0.7827 | 0.6685 | 0.7805 | <ul><li>[]</li><li> | 
+| Function-base (flat) | 0.6241 | 0.8325 | 0.7339 | 0.8193 | 8 | 
+| T5-NTR               | 0.5440 | 0.8000 | 0.6828 | 0.7790 | 3 | 
+| Function-base (comp) | 0.3857 | 0.6484 | 0.4914 | 0.6453 | 8 | 
 |-------|------|--------|--------|--------|------|
-
