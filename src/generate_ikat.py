@@ -127,7 +127,7 @@ if __name__ == "__main__":
             output_ids = model.generate(
                     **batch_inputs,
                     num_beams=args.num_beams,
-                    max_length=args.max_tgt_length,
+                    max_new_tokens=args.max_tgt_length,
                     do_sample=args.do_sample,
                     top_k=args.top_k,
             )
