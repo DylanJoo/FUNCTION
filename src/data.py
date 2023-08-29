@@ -78,7 +78,7 @@ class DataCollatorForFunctionFlatten:
     max_src_length: Optional[int] = 288
     max_tgt_length: Optional[int] = 32
     n_conversations: Optional[int] = 1
-    instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. request: {} conversation: '
+    instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. Request: {} Conversation: '
     conversation_prefix: Optional[str] = 'user: {0} sytem: {1}'
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -99,7 +99,7 @@ class DataCollatorForFunctionFlatten:
             ## request (focal question/utterance)
             utterance = batch['Question']
             ## user-system conversation # reverse it (the last n turns)
-            avail_conversation = batch['Conversation'][-self.n_conversations:][::-1]
+            avail_conversation = batch['Conversation'][-self.n_conversations:]
             avail_conversation += [["<pad>", "<pad>"]] * self.n_conversations
 
             ## Conversation loop
@@ -152,7 +152,7 @@ class DataCollatorForFunctionCompressed:
     max_tgt_length: Optional[int] = 32
     max_src_conv_length: Optional[int] = 128
     n_conversations: Optional[int] = 1
-    instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. request: {} conversation: '
+    instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. Request: {} Conversation: '
     conversation_prefix: Optional[str] = 'user: {0} sytem: {1}'
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -173,7 +173,7 @@ class DataCollatorForFunctionCompressed:
             sources.append(self.instruction_prefix.format(batch['Question']))
 
             ## Historical conversations
-            avail_conversation = batch['Conversation']
+            avail_conversation = batch['Conversation'][-self.n_conversations:]
             avail_conversation += [["<pad>", "<pad>"]] * self.n_conversations
             for i, conversation in enumerate(avail_conversation[:self.n_conversations]):
                 sources_conv.append(
