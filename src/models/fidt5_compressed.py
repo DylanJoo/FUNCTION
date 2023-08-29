@@ -85,6 +85,7 @@ class FiDT5Stack(T5Stack):
                 **kwargs):
         """ 
         FUNCTION: FUsion-iN-ConversaTION
+        Wrap/unwrap input/ouput with this class (replace t5-encoder) 
 
         :param input_ids: the input for focal request. (B, L)
         :param attention_mask: the mask for focal request. (B L)
@@ -121,7 +122,7 @@ class FiDT5Stack(T5Stack):
         ) 
 
         ## [MERGE] combine the token-level 
-        encoder_outputs_conv['last_hidden_state'] = torch.cat([
+        encoder_outputs['last_hidden_state'] = torch.cat([
             encoder_outputs['last_hidden_state'], 
             compressed_embeds
         ], dim=1)

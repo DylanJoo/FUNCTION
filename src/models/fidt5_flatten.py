@@ -36,19 +36,19 @@ class FiDT5(T5ForConditionalGeneration):
         self.model_parallel = False
         self.device_map = None
 
-    def get_crossattention_scores(self, context_mask):
-        raise NotImplementedError('Please implement this function.')
 
 class FiDT5Stack(T5Stack):
 
-    def forward(self, input_ids, attention_mask, **kwargs):
-        """ FUNCTION: FUsion-iN-ConversaTION
+    def forward(self, 
+                input_ids, attention_mask, 
+                **kwargs):
+        """ 
+        FUNCTION: FUsion-iN-ConversaTION
         Wrap/unwrap input/ouput with this class (replace t5-encoder) 
 
-        :param input_ids: the tokenized input ids with shape (BN, L)
-        :param attention_mask: the attention mask with shape (B, NL)
+        :param input_ids: the input with shape (BN, L)
+        :param attention_mask: the mask with shape (B, NL)
 
-        :return encoder_outputs: the huggingface model output class.
         """
         if input_ids.dim() == 3: # normal usage of FiD
             B, N, L = input_ids.size()
