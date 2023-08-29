@@ -3,3 +3,4 @@ models/ckpt/
 wandb/
 logs/
 datasets/
+*swp

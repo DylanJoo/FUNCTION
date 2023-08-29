@@ -1,3 +1,4 @@
+import random
 import torch
 from dataclasses import dataclass, field
 from typing import Optional, Union, List, Dict, Tuple, Any
@@ -5,7 +6,7 @@ from transformers.tokenization_utils_base import (
     PaddingStrategy, 
     PreTrainedTokenizerBase
 )
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 
 def get_qrecc_dataset(path):
     def split_context(context):
@@ -23,44 +24,47 @@ def get_qrecc_dataset(path):
     return dataset
 
 def get_ikat_dataset(path, resolved=True, concat_ptkb=False):
-    dataset = load_dataset('json', data_files=path)
+    dataset = load_dataset('json', data_files=path)['train']
 
-    for topic in data:
-        ptkbs = list(topic['ptkb'].values())
+    # flatten the turns
+    data_list = []
+    for topic in dataset:
+        topic_id = topic['number']
+        try:
+            ptkbs = topic['ptkb']
+        except:
+            continue
 
         history = []
-        data = {}
-        for turn in turns:
+        for turn in topic['turns']:
+            data = {}
+
             # turn
-            topic_turn_id = f"{topic['number']}_{turn['turn_id']}"
+            turn_id = turn['turn_id']
             utterance = turn['utterance']
             response = turn['response']
 
             # collect data
-            data['id'] = topic_turn_id
+            data['id'] = f"{topic_id}_{turn_id}" 
+
             ## qrecc: question / conversations/ rewrite
             data['Question'] = utterance
             data['Conversation'] = history
             data['Rewrite'] = turn['resolved_utterance']
-            data['PTKBS'] = ptkbs
             data['selected_ptkbs'] = [\
-                    data['PTKBS'][i] for i in turn['ptkb_provenance']\
+                    ptkbs[str(i)] for i in turn['ptkb_provenance']\
             ]
 
-            # historical utterances
-            history.append([utterance, resolved])
+            ## use all ptkbs
+            data['all_ptkbs'] = random.sample(
+                    list(ptkbs.values()), k=len(ptkbs)
+            )
+            ## historical utterances
+            history.append([utterance, response])
 
-            if concat_ptkb: 
-                # use all ptkbs
-                # pick few ptkb
-                if selected_ptkb:
-                    if isinstance(selected_ptkb, list):
-                        selected_ptkb = [ptkbs[p-1] for p in selected_ptkb]
-                        selected_ptkb = " ||| ".join(selected_ptkb)
-                    else:
-                        selected_ptkb = ptkbs[selected_ptkb-1]
+            data_list.append(data)
 
-    return data_dict
+    return Dataset.from_list(data_list)
 
 @dataclass
 class DataCollatorForFunctionFlatten:
@@ -154,8 +158,7 @@ class DataCollatorForFunctionCompressed:
                 request: {request} \
                 conversation: user: {utterance} system: {response}
 
-        Target output:
-        {rewritten query}
+        Target output: {rewritten query}
         """
 
         # preparing source/target
@@ -217,11 +220,8 @@ class DataCollatorForNTR:
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
         """ Usage:
-        Source input
-                {utterance} ||| {response} ||| {request}
-
-        Target output
-            {rewritten query}
+        Source input: {utterance} ||| {response} ||| {request}
+        Target output: {rewritten query}
         """
         # preparing source/target
         sources, targets = [], []
@@ -233,7 +233,8 @@ class DataCollatorForNTR:
             avail_conversation = batch['Conversation']
             for i, conversation in enumerate(avail_conversation[:self.n_conversations]):
                 history.append(conversation[0]) # user utterance
-                history.append(conversation[1]) # system response
+                if conversation[1] != "":
+                    history.append(conversation[1]) # system response
             sources.append(" ||| ".join( history + [utterance] ))
 
             ## rewritten questions
