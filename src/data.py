@@ -221,6 +221,7 @@ class DataCollatorForNTR:
     truncation: Union[bool, str] = True
     max_src_length: Optional[int] = 512
     max_tgt_length: Optional[int] = 32
+    include_response: bool = False
     n_conversations: Optional[int] = 1
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -247,7 +248,8 @@ class DataCollatorForNTR:
                 else:
                     # user system conversation
                     history.append(conversation[0])
-                    history.append(conversation[1])
+                    if self.include_response:
+                        history.append(conversation[1])
                     i += 1
 
             sources.append(" ||| ".join( history + [utterance] ))

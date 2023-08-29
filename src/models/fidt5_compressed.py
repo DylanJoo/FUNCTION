@@ -51,6 +51,7 @@ class FiDT5(T5ForConditionalGeneration):
         :param input_ids_conv: tokenized input_ids for (multi-turn) conversations.
         :param attention_mask_conv: the mask for (multi-turn) conversations.
         """
+
         if encoder_outputs is None:
             encoder_outputs = self.encoder(
                     input_ids=input_ids,
@@ -58,9 +59,8 @@ class FiDT5(T5ForConditionalGeneration):
                     input_ids_conv=input_ids_conv, 
                     attention_mask_conv=attention_mask_conv,
             )
-
-        # expand attention mask
-        attenion_mask = self._expand(attention_mask)
+        # expand attention mask # [NOTE] not sure if it works on eval.
+        attention_mask = self._expand(attention_mask)
 
         return super().forward(
                 input_ids=input_ids,
@@ -75,7 +75,8 @@ class FiDT5(T5ForConditionalGeneration):
                 (mask.size(0), n_conversations), 
                 device=mask.device
         )
-        return torch.cat([mask, additional_mask], -1)
+        mask_expanded = torch.cat([mask, additional_mask], -1)
+        return mask_expanded
 
 class FiDT5Stack(T5Stack):
 

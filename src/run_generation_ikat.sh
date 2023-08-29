@@ -11,6 +11,7 @@ export CUDA_VISIBLE_DEVICES=1
 #         --device cuda \
 #         --batch_size 4 \
 #         --n_conversations ${N_HISTORY} \
+#         --include_response \
 #         --num_beams 5 \
 #         --max_src_length 512 \
 #         --max_tgt_length 128
@@ -26,6 +27,7 @@ export CUDA_VISIBLE_DEVICES=1
 #         --output_jsonl results/ikat_train/t5ntr.ptkb_select.history_${N_HISTORY}.jsonl \
 #         --device cuda \
 #         --batch_size 4 \
+#         --include_response \
 #         --n_conversations ${N_HISTORY} \
 #         --num_beams 5 \
 #         --max_src_length 512 \

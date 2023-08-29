@@ -13,7 +13,7 @@ train_flatten:
 	        --per_device_train_batch_size 8 \
 	        --max_src_length 128 \
 	        --max_tgt_length 32 \
-	        --learning_rate 5e-4 \
+	        --learning_rate 3e-4 \
 	        --evaluation_strategy steps \
 	        --max_steps 20000 \
 	        --save_steps 5000 \
@@ -40,7 +40,7 @@ train_compressed:
 	        --max_src_length 32 \
 	        --max_tgt_length 32 \
 	        --max_src_conv_length 160 \
-	        --learning_rate 5e-4 \
+	        --learning_rate 3e-4 \
 	        --evaluation_strategy steps \
 	        --max_steps 20000 \
 	        --save_steps 5000 \

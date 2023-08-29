@@ -41,6 +41,7 @@ if __name__ == "__main__":
     parser.add_argument("--conversation_prefix", default=None, type=str)
     parser.add_argument("--n_conversations", default=1, type=int)
     parser.add_argument("--output_history", default=False, action='store_true')
+    parser.add_argument("--include_response", default=False, action='store_true')
     parser.add_argument("--all_ptkb_as_conversation", \
             default=False, action='store_true')
     parser.add_argument("--select_ptkb_as_conversation", \
@@ -90,6 +91,7 @@ if __name__ == "__main__":
                 max_src_length=args.max_src_length,
                 max_tgt_length=args.max_tgt_length,
                 n_conversations=args.n_conversations
+                include_response=args.include_response
         )
     model.to(args.device)
     model.eval()
