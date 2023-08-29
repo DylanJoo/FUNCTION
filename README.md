@@ -49,8 +49,9 @@ The evaluation dataset is qrecc-test; it was based on open-domain conversational
 
 | Model | BLEU | ROUGE1 | ROUGE2 | ROUGEL | \# CONV. |
 |-------|------|--------|--------|--------|------|
-| Function-base (flat) | 0.6241 | 0.8325 | 0.7339 | 0.8193 | 8 | 
 | T5-NTR               | 0.5440 | 0.8000 | 0.6828 | 0.7790 | 3 | 
+| T5-NTR               | ////// | ////// | ////// | ////// | 8 | 
+| Function-base (flat) | 0.6241 | 0.8325 | 0.7339 | 0.8193 | 8 | 
 | Function-base (comp) | 0.3857 | 0.6484 | 0.4914 | 0.6453 | 8 | 
 |-------|------|--------|--------|--------|------|
 
@@ -59,8 +60,10 @@ The evaluation dataset in ikat-train/ikat-teset, which are the conversational in
 
 | Model | PTKBs | \# lag Conv. | BLEU | ROUGE1 | ROUGE2 | ROUGEL |
 |-------|-------|--------------|------|--------|--------|--------|
-| T5-NTR               | ALL as conv      | 3  | 0.3188 | 0.4966 | 0.3882 | 0.4711 |
-| T5-NTR               | ALL as conv      | 5  | 0.2540 | 0.4134 | 0.3150 | 0.3984 |
+| T5-NTR               | Selected (truth) | 1  | 0.4326 | 0.6865 | 0.5959 | 0.6574 |
 | T5-NTR               | Selected (truth) | 3  | 0.3488 | 0.5356 | 0.4455 | 0.5154 |
 | T5-NTR               | Selected (truth) | 5  | 0.2386 | 0.3964 | 0.3068 | 0.3785 |
+| T5-NTR               | ALL as conv      | 1  | 0.4125 | 0.6770 | 0.5790 | 0.6444 |
+| T5-NTR               | ALL as conv      | 3  | 0.3188 | 0.4966 | 0.3882 | 0.4711 |
+| T5-NTR               | ALL as conv      | 5  | 0.2540 | 0.4134 | 0.3150 | 0.3984 |
 |-------|------|--------|--------|--------|------|
