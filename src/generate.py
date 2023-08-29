@@ -40,7 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("--instruction_prefix", default=None, type=str)
     parser.add_argument("--conversation_prefix", default=None, type=str)
     parser.add_argument("--n_conversations", default=1, type=int)
-    parser.add_argument("--include_history", default=False, action='store_true')
+    parser.add_argument("--output_history", default=False, action='store_true')
 
     # generation config
     parser.add_argument("--num_beams", default=1, type=int)
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             )
 
             for i, feature in enumerate(batch_features):
-                if args.include_history:
+                if args.output_history:
                     fout.write(json.dumps({
                         "qid": feature['id'],
                         "question": feature['Question'],
