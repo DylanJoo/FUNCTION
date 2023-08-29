@@ -1,3 +1,4 @@
+from copy import copy
 import random
 import torch
 from dataclasses import dataclass, field
@@ -23,7 +24,7 @@ def get_qrecc_dataset(path):
 
     return dataset
 
-def get_ikat_dataset(path, resolved=True, concat_ptkb=False):
+def get_ikat_dataset(path):
     dataset = load_dataset('json', data_files=path)['train']
 
     # flatten the turns
@@ -51,7 +52,7 @@ def get_ikat_dataset(path, resolved=True, concat_ptkb=False):
 
             ## qrecc: question / conversations/ rewrite
             data['Question'] = utterance
-            data['Conversation'] = history
+            data['Conversation'] = copy(history)
             data['Rewrite'] = turn['resolved_utterance']
             data['selected_ptkbs'] = [\
                     ptkbs[str(i)] for i in turn['ptkb_provenance']\
@@ -98,8 +99,10 @@ class DataCollatorForFunctionFlatten:
             ## request (focal question/utterance)
             utterance = batch['Question']
             ## user-system conversation # reverse it (the last n turns)
-            avail_conversation = batch['Conversation'][::-1]
+            avail_conversation = batch['Conversation'][-self.n_conversations:][::-1]
             avail_conversation += [["<pad>", "<pad>"]] * self.n_conversations
+
+            ## Conversation loop
             for i, conversation in enumerate(avail_conversation[:self.n_conversations]):
                 if i == 0:
                     sources.append(
@@ -170,7 +173,7 @@ class DataCollatorForFunctionCompressed:
             sources.append(self.instruction_prefix.format(batch['Question']))
 
             ## Historical conversations
-            avail_conversation = batch['Conversation'][::-1]
+            avail_conversation = batch['Conversation']
             avail_conversation += [["<pad>", "<pad>"]] * self.n_conversations
             for i, conversation in enumerate(avail_conversation[:self.n_conversations]):
                 sources_conv.append(
