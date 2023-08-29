@@ -31,7 +31,9 @@ def get_ikat_dataset(path, resolved=True, concat_ptkb=False):
     for topic in dataset:
         topic_id = topic['number']
         try:
-            ptkbs = topic['ptkb']
+            # [NOTE] `Dataset` would make the dict length consistent, 
+            # so it'll add None
+            ptkbs = {k: v for k, v in topic['ptkb'].items() if v is not None}
         except:
             continue
 
@@ -57,12 +59,12 @@ def get_ikat_dataset(path, resolved=True, concat_ptkb=False):
 
             ## use all ptkbs
             data['all_ptkbs'] = random.sample(
-                    list(ptkbs.values()), k=len(ptkbs)
+                    list(ptkbs.values()), k=len(list(ptkbs.values()))
             )
+            data_list.append(data)
+
             ## historical utterances
             history.append([utterance, response])
-
-            data_list.append(data)
 
     return Dataset.from_list(data_list)
 
@@ -231,13 +233,21 @@ class DataCollatorForNTR:
             utterance = batch['Question']
             ## user-system conversation 
             avail_conversation = batch['Conversation']
-            for i, conversation in enumerate(avail_conversation[:self.n_conversations]):
-                history.append(conversation[0]) # user utterance
-                if conversation[1] != "":
-                    history.append(conversation[1]) # system response
-            sources.append(" ||| ".join( history + [utterance] ))
 
-            ## rewritten questions
+            i = 0
+            while i < self.n_conversations:
+                conversation = avail_conversation.pop(0)
+
+                if len(conversation) == 1: 
+                    # ptkbs
+                    history.append(conversation[0]) 
+                else:
+                    # user system conversation
+                    history.append(conversation[0])
+                    history.append(conversation[1])
+                    i += 1
+
+            sources.append(" ||| ".join( history + [utterance] ))
             targets.append(batch['Rewrite'])
 
         # tokenizing src/tgt

@@ -102,15 +102,13 @@ if __name__ == "__main__":
     ### selected ptkbs
     if args.select_ptkb_as_conversation:
         dataset = dataset.map(lambda x: {
-            "Conversation": [[u, ""] for u in x['selected_ptkbs']] + \
-                    x['Conversation']
+            "Conversation": [[u] for u in x['selected_ptkbs']] + x['Conversation']
         })
 
     ### all ptkbs
     if args.all_ptkb_as_conversation:
         dataset = dataset.map(lambda x: {
-            "Conversation": [[u, ""] for u in x['all_ptkbs']] + \
-                    x['Conversation']
+            "Conversation": [[u] for u in x['all_ptkbs']] + x['Conversation']
         })
 
     dataset = dataset.to_list()
