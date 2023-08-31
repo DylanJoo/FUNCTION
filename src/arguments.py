@@ -50,6 +50,7 @@ class TrainArgs(Seq2SeqTrainingArguments):
     remove_unused_columns: bool = field(default=False)
     report_to: Optional[List[str]] = field(default=None)
     warmup_steps: int = field(default=0)
+    # lr_scheduler_type: Union[SchedulerType, str] = field(default="linear")
     # customized
     instruction_prefix: Optional[str] = field(default=None)
     conversation_prefix: Optional[str] = field(default=None)

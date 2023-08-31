@@ -22,6 +22,7 @@ train_flatten:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
+	        --lr_scheduler_type constant \
 		--instruction_prefix 'Rewrite the user query based on the previous user-system conversation. user query: {} conversation: ' \
 		--conversation_prefix 'user: {0} system: {1}' \
 	        --warmup_steps 800 \
