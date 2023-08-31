@@ -40,6 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("--instruction_prefix", default=None, type=str)
     parser.add_argument("--conversation_prefix", default=None, type=str)
     parser.add_argument("--n_conversations", default=1, type=int)
+    parser.add_argument("--n_responses", default=1, type=int)
     parser.add_argument("--output_history", default=False, action='store_true')
 
     # generation config
@@ -85,7 +86,8 @@ if __name__ == "__main__":
                 tokenizer=tokenizer,
                 max_src_length=args.max_src_length,
                 max_tgt_length=args.max_tgt_length,
-                n_conversations=args.n_conversations
+                n_conversations=args.n_conversations,
+                n_responses=args.n_responses
         )
     model.to(args.device)
     model.eval()

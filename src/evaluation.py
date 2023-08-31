@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--metric", action='append', default=[])
     parser.add_argument("--jsonl", type=str, default='prediction.jsonl')
+    parser.add_argument("--baseline", action='store_true', default=False)
     args = parser.parse_args()
 
     predictions = []
@@ -25,13 +26,14 @@ if __name__ == '__main__':
     with open(args.jsonl, 'r') as f:
         for line in tqdm(f):
             data = json.loads(line.strip())
-            predictions.append(data['generated_question'])
+            if args.baseline:
+                predictions.append(data['question'])
+            else:
+                predictions.append(data['generated_question'])
             references.append(data['rewritten_question'])
 
-        print('predictions/references have been loaded')
-
         results = {}
-        print(args.metric)
+        print('# used metrics:', args.metric)
         if 'bleu' in " ".join(args.metric):
             scores = get_score(
                     evaluate.load('bleu'), 

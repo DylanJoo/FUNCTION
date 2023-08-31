@@ -221,36 +221,40 @@ class DataCollatorForNTR:
     truncation: Union[bool, str] = True
     max_src_length: Optional[int] = 512
     max_tgt_length: Optional[int] = 32
-    include_response: bool = False
     n_conversations: Optional[int] = 1
+    n_responses: Optional[int] = 1
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
         """ Usage:
-        Source input: {utterance} ||| {response} ||| {request}
+        Source input: {context} ||| {request}
+            n_conversations: # turns of user-system utterances.
+            n_responses: # system utterances and should be smaller than n_conversations 
         Target output: {rewritten query}
         """
         # preparing source/target
         sources, targets = [], []
         for batch in features:
-            history = []
             ## Focal question, utterance
             utterance = batch['Question']
+
+            ## Contexts
+            ## user's statement or empty (if it has)
+            history = [c[0] for c in batch['Conversation'] if len(c) == 1]
+
             ## user-system conversation 
-            avail_conversation = batch['Conversation']
+            avail_conversations = [\
+                    c for c in batch['Conversation'] if len(c) == 2\
+                    ][-self.n_conversations:]
 
             i = 0
-            while i < min(len(avail_conversation), self.n_conversations):
-                conversation = avail_conversation.pop(0)
+            while i < len(avail_conversations):
+                conversation = avail_conversations.pop(0)
 
-                if len(conversation) == 1: 
-                    # ptkbs
-                    history.append(conversation[0]) 
-                else:
-                    # user system conversation
-                    history.append(conversation[0])
-                    if self.include_response:
-                        history.append(conversation[1])
-                    i += 1
+                # user system conversation
+                history.append(conversation[0])
+                if i < self.n_responses:
+                    history.append(conversation[1])
+                i += 1
 
             sources.append(" ||| ".join( history + [utterance] ))
             targets.append(batch['Rewrite'])
