@@ -47,16 +47,17 @@ A popular baseline is T5 fine-tuned on CANARD dataset. Please refer to their [pa
 ### In-domain evaluation
 The evaluation dataset is qrecc-test; it was based on open-domain conversational question answering dataset. 
 
-| Model | BLEU | ROUGE1 | ROUGE2 | ROUGEL | \# CONV. |
-|-------|------|--------|--------|--------|------|
-| Raw utterance        | 0.3741 | 0.6990 | 0.5318 | 0.6973 | - | 
-|-------|------|--------|--------|--------|------|
-| T5-NTR               | 0.5440 | 0.8000 | 0.6828 | 0.7790 | 3 | 
-| T5-NTR               | 0.5310 | 0.7893 | 0.6694 | 0.7686 | 8 | 
-|-------|------|--------|--------|--------|------|
-| Function-base (flat) | 0.6241 | 0.8325 | 0.7339 | 0.8193 | 8 | 
-| Function-base (comp) | 0.3857 | 0.6484 | 0.4914 | 0.6453 | 8 | 
-|-------|------|--------|--------|--------|------|
+| Model |\# lag Conv. (Q:R) |  BLEU  | ROUGE1 | ROUGE2 | ROUGEL | 
+|-------|------|------------|--------|--------|------|
+| Raw utterance  | -:-      | 0.3741 | 0.6990 | 0.5318 | 0.6973 | 
+|-------|------|------------|--------|--------|------|
+| T5-NTR         | 5:1      | 0.5363 | 0.7919 | 0.6720 | 0.7705 | 
+| T5-NTR         | 5:2      | 0.5337 | 0.7904 | 0.6711 | 0.7697 |
+| T5-NTR         | 5:3      | 0.5323 | 0.7901 | 0.6706 | 0.7694 |
+|-------|------|------------|--------|--------|------|
+| Function-flat  | XX: XX   | 0.6241 | 0.8325 | 0.7339 | 0.8193 | 
+| Function-comp  | 10: 10   | 0.5486 | 0.8004 | 0.6806 | 0.7869 | 
+|-------|------|------------|--------|--------|------|
 
 ### Out-domain evaluation (ikat-train)
 The evaluation dataset in ikat-train/ikat-teset, which are the conversational information seeking dataset that envovled personalized statements.

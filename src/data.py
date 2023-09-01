@@ -232,7 +232,8 @@ class DataCollatorForNTR:
         Target output: {rewritten query}
         """
         # preparing source/target
-        sources, targets = [], []
+        contexts, utterances = [], []
+        targets = []
         for batch in features:
             ## Focal question, utterance
             utterance = batch['Question']
@@ -256,14 +257,15 @@ class DataCollatorForNTR:
                     history.append(conversation[1])
                 i += 1
 
-            sources.append(" ||| ".join( history + [utterance] ))
+            contexts.append(" ||| ".join(history))
+            utterances.append(" ||| "+utterance)
             targets.append(batch['Rewrite'])
 
         # tokenizing src/tgt
         inputs = self.tokenizer(
-                sources,
+                contexts, utterances,
                 max_length=self.max_src_length,
-                truncation=self.truncation,
+                truncation='only_first', 
                 padding=self.padding,
                 return_tensors='pt'
         )
