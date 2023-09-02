@@ -240,7 +240,8 @@ class DataCollatorForNTR:
 
             ## Contexts
             ## user's statement or empty (if it has)
-            history = [c[0] for c in batch['Conversation'] if len(c) == 1]
+            history = []
+            history_statement = [c[0] for c in batch['Conversation'] if len(c) == 1]
 
             ## user-system conversation 
             avail_conversations = [\
@@ -249,15 +250,18 @@ class DataCollatorForNTR:
 
             i = 0
             while i < len(avail_conversations):
-                conversation = avail_conversations.pop(0)
+                ## [NOTE] pop from the last conversation
+                conversation = avail_conversations.pop()
 
                 # user system conversation
-                history.append(conversation[0])
                 if i < self.n_responses:
                     history.append(conversation[1])
+                history.append(conversation[0])
                 i += 1
 
-            contexts.append(" ||| ".join(history))
+            contexts.append(" ||| ".join(
+                (history+history_statement)[::-1]
+            ))
             utterances.append(" ||| "+utterance)
             targets.append(batch['Rewrite'])
 

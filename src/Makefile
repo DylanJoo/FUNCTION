@@ -3,7 +3,7 @@ EVAL_FILE=/home/jhju/datasets/qrecc/qrecc_test.json
 
 # 22 G
 train_flatten:
-	export CUDA_VISIBLE_DEVICES=2; python3 train_flatten.py \
+	export CUDA_VISIBLE_DEVICES=0; python3 train_flatten.py \
      		--model_name_or_path google/flan-t5-base \
      		--tokenizer_name google/flan-t5-base \
 		--config_name google/flan-t5-base \
@@ -22,10 +22,10 @@ train_flatten:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
-	        --lr_scheduler_type constant \
-		--instruction_prefix 'Rewrite the user query based on the previous user-system conversation. user query: {} conversation: ' \
+	        --lr_scheduler_type linear \
+		--instruction_prefix 'Rewrite the user query based on previous user-system conversations. user query: {} conversation: ' \
 		--conversation_prefix 'user: {0} system: {1}' \
-	        --warmup_steps 800 \
+	        --warmup_steps 1000 \
 	        --report_to wandb
 
 # 17 G
@@ -50,9 +50,9 @@ train_compressed:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 10 \
-		--instruction_prefix 'Rewrite the user query based on the previous user-system dialogue. user query: {} dialogue: ' \
-	        --conversation_prefix 'user: {0} system: {1}' \
-	        --warmup_steps 800 \
+		--instruction_prefix 'Rewrite the user query based on previous user-system conversations. user query: {} conversation: ' \
+		--conversation_prefix 'user: {0} system: {1}' \
+	        --warmup_steps 1000 \
 	        --report_to wandb
 
 generate_by_function_flat:
