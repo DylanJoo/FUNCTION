@@ -34,8 +34,7 @@ EVAL_FILE=/home/jhju/datasets/qrecc/qrecc_test.json
 #         --n_conversations ${N_HISTORY} \
 #         --num_beams 5 \
 #         --max_src_length 512 \
-#         --max_tgt_length 32 \
-#         --max_src_conv_length 256
+#         --max_tgt_length 32
 # done
 
 # Funtion-base-compressed. 
