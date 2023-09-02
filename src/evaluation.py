@@ -3,10 +3,11 @@ from tqdm import tqdm
 import evaluate
 import argparse
 
-def get_score(evaluate, predictions, references, metric_key=None):
+def get_score(evaluate, predictions, references, metric_key=None, **kwargs):
     results = evaluate.compute(
             predictions=predictions, 
-            references=references
+            references=references,
+            **kwargs
     )
 
     if metric_key is None: # return the first key
@@ -49,16 +50,29 @@ if __name__ == '__main__':
                     references
             )
             results.update(scores)
+        if 'bert' in " ".join(args.metric):
+            scores = get_score(
+                    evaluate.load('bertscore'),
+                    predictions, 
+                    references,
+                    lang='en',
+                    device='cuda'
+            )
+            for k in ['precision', 'recall', 'f1']: 
+                results.update({f"bertscore-{k}": sum(scores[k])/len(scores[k])})
 
         for metric in args.metric:
-            if ('rouge' not in metric) and ('bleu' not in metric):
+            if ('rouge' not in metric) and ('bleu' not in metric) and ('bert' not in metric):
                 scores = get_score(
-                        evaluate.load(metric), 
+                        evaluate.load(metric),
                         predictions, 
-                        references
+                        references,
                 )
                 results.update(scores)
 
         # output
         for k, v in results.items():
-            print(k, v)
+            try:
+                print(k, round(v, 4))
+            except:
+                print(k, v)
