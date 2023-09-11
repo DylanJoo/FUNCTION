@@ -1,101 +1,97 @@
 TRAIN_FILE=/home/jhju/datasets/qrecc/qrecc_train.json
 EVAL_FILE=/home/jhju/datasets/qrecc/qrecc_test.json
+TEST_FILE=dataset/2023_test_topics.json
+BASE=google/flan-t5-base
 
 # 22 G
 train_flatten:
-	export CUDA_VISIBLE_DEVICES=0; python3 train_flatten.py \
-     		--model_name_or_path google/flan-t5-base \
-     		--tokenizer_name google/flan-t5-base \
-		--config_name google/flan-t5-base \
+	export CUDA_VISIBLE_DEVICES=1; python3 train_flatten.py \
+     		--model_name_or_path ${BASE} \
+     		--tokenizer_name ${BASE} \
+		--config_name ${BASE} \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/function-base-flatten \
-	        --per_device_train_batch_size 8 \
+	        --per_device_train_batch_size 16 \
 	        --max_src_length 128 \
-	        --max_tgt_length 32 \
+	        --max_tgt_length 64 \
 	        --learning_rate 1e-4 \
 	        --evaluation_strategy steps \
-	        --max_steps 20000 \
+	        --max_steps 10000 \
 	        --save_steps 5000 \
 	        --eval_steps 500 \
 	        --do_train \
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
+	        --warmup_steps 0 \
 	        --lr_scheduler_type linear \
-		--instruction_prefix 'Rewrite the user query based on previous user-system conversations. user query: {} conversation: ' \
-		--conversation_prefix 'user: {0} system: {1}' \
-	        --warmup_steps 1000 \
+		--instruction_prefix 'Rewrite the user utterance based on previous user-system conversations. user: {}' \
+		--conversation_prefix 'conversation: user: {0} system: {1}' \
+	        --report_to wandb
+
+train_ntr:
+	export CUDA_VISIBLE_DEVICES=0; python3 train_ntr.py \
+     		--model_name_or_path ${BASE} \
+     		--tokenizer_name ${BASE} \
+		--config_name ${BASE} \
+     		--train_file ${TRAIN_FILE} \
+     		--eval_file ${EVAL_FILE} \
+		--output_dir models/ckpt/ntr-base \
+	        --per_device_train_batch_size 16 \
+	        --max_src_length 512 \
+	        --max_tgt_length 64 \
+	        --learning_rate 1e-4 \
+	        --evaluation_strategy steps \
+	        --max_steps 10000 \
+	        --save_steps 5000 \
+	        --eval_steps 500 \
+	        --do_train \
+	        --do_eval \
+	        --optim adafactor \
+	        --n_conversations 6 \
+	        --warmup_steps 0 \
+	        --lr_scheduler_type linear \
 	        --report_to wandb
 
 # 17 G
 train_compressed:
-	export CUDA_VISIBLE_DEVICES=2; python3 train_compressed.py \
-     		--model_name_or_path google/flan-t5-base \
-     		--tokenizer_name google/flan-t5-base \
-		--config_name google/flan-t5-base \
+	export CUDA_VISIBLE_DEVICES=0; python3 train_compressed.py \
+     		--model_name_or_path ${BASE} \
+     		--tokenizer_name ${BASE} \
+		--config_name ${BASE} \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/function-base-compressed \
-	        --per_device_train_batch_size 8 \
+	        --per_device_train_batch_size 16 \
 	        --max_src_length 32 \
-	        --max_tgt_length 32 \
-	        --max_src_conv_length 160 \
+	        --max_tgt_length 64 \
+	        --max_src_conv_length 128 \
 	        --learning_rate 1e-4 \
 	        --evaluation_strategy steps \
-	        --max_steps 20000 \
+	        --max_steps 10000 \
 	        --save_steps 5000 \
 	        --eval_steps 500 \
 	        --do_train \
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 10 \
-		--instruction_prefix 'Rewrite the user query based on previous user-system conversations. user query: {} conversation: ' \
-		--conversation_prefix 'user: {0} system: {1}' \
-	        --warmup_steps 1000 \
+	        --warmup_steps 0 \
+		--instruction_prefix 'Rewrite the user utterance based on previous user-system conversations. user: {}' \
+		--conversation_prefix 'conversation: user: {0} system: {1}' \
+	        --lr_scheduler_type linear \
 	        --report_to wandb
 
-generate_by_function_flat:
-	python3 generate.py \
-		--model_name google/flan-t5-base \
-		--model_path models/ckpt/function-base-flatten/checkpoint-20000 \
-		--input_file ${EVAL_FILE} \
-		--output_jsonl results/qrecc_test.function_flat.prediction.jsonl \
-		--device cuda:1 \
-		--batch_size 4 \
-		--instruction_prefix 'Rewrite the user query based on the previous user-system conversation. user query: {} conversation: ' \
-		--conversation_prefix 'user: {0} system: {1}' \
-		--n_conversations 8 \
-		--num_beams 5 \
-		--max_src_length 256 \
-		--max_tgt_length 32
-
-generate_by_function_comp:
-	export CUDA_VISIBLE_DEVICES=1; python3 generate.py \
-		--model_name google/flan-t5-base \
-		--model_path models/ckpt/function-base-compressed/checkpoint-20000 \
-		--input_file ${EVAL_FILE} \
-		--output_jsonl results/qrecc_test.function_comp.prediction.jsonl \
-		--device cuda \
-		--batch_size 4 \
-		--instruction_prefix 'Rewrite the user query based on the previous user-system dialogue. user query: {} dialogue: ' \
-	        --conversation_prefix 'user: {0} system: {1}' \
-		--n_conversations 8 \
-		--num_beams 5 \
-		--max_src_length 64 \
-		--max_tgt_length 32 \
-		--max_src_conv_length 256
-
-generate_by_t5ntr:
-	python3 generate.py \
+rewrite_by_t5ntr:
+	python3 generate_ikat.py \
 		--model_name castorini/t5-base-canard \
 		--model_path castorini/t5-base-canard \
-		--input_file ${EVAL_FILE} \
-		--output_jsonl results/qrecc_test/t5ntr_history_5-${N_RESPONSES}.prediction.jsonl \
+		--input_file ${TEST_FILE} \
+		--output_jsonl results/ikat_test/t5ntr_history_3-3.jsonl \
 		--device cuda:0 \
 		--batch_size 4 \
-		--n_conversations 5 \
-		--n_responses ${N_RESPONSES} \
+		--n_conversations 3 \
+		--n_responses 3 \
 		--num_beams 5 \
 		--max_src_length 512 \
-		--max_tgt_length 32
+		--max_tgt_length 256

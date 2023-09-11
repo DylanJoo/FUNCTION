@@ -43,6 +43,7 @@ class FiDT5(T5ForConditionalGeneration):
         input_ids_conv: Optional[torch.LongTensor] = None,
         attention_mask_conv: Optional[torch.FloatTensor] = None,
         encoder_outputs: Optional[Tuple[Tuple[torch.Tensor]]] = None,
+        labels: Optional[torch.LongTensor] = None,
         **kwargs
     ) -> Union[Tuple[torch.FloatTensor], Seq2SeqLMOutput]:
         """
@@ -58,6 +59,7 @@ class FiDT5(T5ForConditionalGeneration):
                     attention_mask=attention_mask,
                     input_ids_conv=input_ids_conv, 
                     attention_mask_conv=attention_mask_conv,
+                    **kwargs
             )
         # expand attention mask # [NOTE] not sure if it works on eval.
         attention_mask = self._expand(attention_mask)
@@ -66,6 +68,7 @@ class FiDT5(T5ForConditionalGeneration):
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 encoder_outputs=encoder_outputs, 
+                labels=labels,
                 **kwargs
         )
 

@@ -9,8 +9,8 @@ from transformers import (
 from datasets import load_dataset
 
 # customized modules
-from models import FiDT5_flat
-from data import DataCollatorForFunctionFlatten, get_qrecc_dataset
+from transformers import T5ForConditionalGeneration
+from data import DataCollatorForNTR, get_qrecc_dataset
 from arguments import ModelArgs, DataArgs, TrainArgs
 
 import os
@@ -31,7 +31,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name)
 
     # Model
-    model = FiDT5_flat.from_pretrained(model_args.model_name_or_path)
+    model = T5ForConditionalGeneration.from_pretrained(model_args.model_name_or_path)
 
     # Generation config
     generation_config = GenerationConfig.from_model_config(model.config)
@@ -39,14 +39,12 @@ def main():
 
     # Data
     ## Datacollator
-    data_collator = DataCollatorForFunctionFlatten(
+    data_collator = DataCollatorForNTR(
             tokenizer=tokenizer, 
             max_src_length=data_args.max_src_length,
             max_tgt_length=data_args.max_tgt_length,
-            n_conversations=model_args.n_conversations,
-            n_statements=0,
-            instruction_prefix=training_args.instruction_prefix,
-            conversation_prefix=training_args.conversation_prefix,
+            max_n_conversations=model_args.n_conversations,
+            max_n_responses=model_args.n_conversations,
             truncation=True,
             padding=True,
     )

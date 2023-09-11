@@ -9,8 +9,8 @@ from transformers import (
 from datasets import load_dataset
 
 # customized modules
-from data import DataCollatorForFunctionCompressed, get_qrecc_dataset
 from models import FiDT5_comp
+from data import DataCollatorForFunctionCompressed, get_qrecc_dataset
 from arguments import ModelArgs, DataArgs, TrainArgs
 
 import os
@@ -56,9 +56,15 @@ def main():
     dataset = get_qrecc_dataset(data_args.train_file)
     n_examples = len(dataset['train'])
     if training_args.do_eval:
-        dataset['test'] = get_qrecc_dataset(
-                data_args.eval_file
-        )['train'].shuffle(seed=42).select(list(range(300)))
+        if 'qrecc' in data_args.eval_file:
+            # qrecc test
+            dataset['test'] = get_qrecc_dataset(
+                    data_args.eval_file
+            )['train'].shuffle(seed=42).select(list(range(300)))
+        else:
+            # ikat train
+            from data import get_ikat_dataset
+            dataset['test'] = get_ikat_dataset(data_args.eval_file)
     else:
         dataset['test'] = None
 

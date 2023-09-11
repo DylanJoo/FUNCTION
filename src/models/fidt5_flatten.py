@@ -48,7 +48,6 @@ class FiDT5Stack(T5Stack):
 
         :param input_ids: the input with shape (BN, L)
         :param attention_mask: the mask with shape (B, NL)
-
         """
         if input_ids.dim() == 3: # normal usage of FiD
             B, N, L = input_ids.size()
