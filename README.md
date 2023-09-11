@@ -15,7 +15,6 @@ Requirements
 transformers
 datasets
 ```
-
 ---
 ### Dataset
 We use the training/testing datsaet collected by [qrecc repositary](https://github.com/apple/ml-qrecc/tree/main). 
@@ -26,6 +25,7 @@ mkdir src/dataset
 wget https://github.com/apple/ml-qrecc/raw/main/dataset/qrecc_data.zip -O src/dataset/
 unzip src/dataset/qrecc_data.zip
 ```
+
 ### Modeling
 - Function-base
 The backbone architecture is based on Fusion-in-decoder; please refer to [model variants](src/models/) for detail.
@@ -81,17 +81,20 @@ The evaluation dataset in ikat-train/ikat-teset, which are the conversational in
 |:-----------------|:-----------------|:-----|--------|--------|--------|--------|
 | Raw utterance    | None             | -    | 0.6603 | 0.8162 | 0.7533 | 0.8149 |
 |------------------|------------------|------|--------|--------|--------|--------|
-| T5-NTR           | None             | 1-0  | 
-| T5-NTR           | None             | 1-1  | 
-| T5-NTR           | None             | 3-0  |
-| T5-NTR           | None             | 3-1  |
-| T5-NTR           | None             | 5-0  |
-| T5-NTR           | None             | 5-1  |
+| T5-NTR           | None             | 1-0  | 0.2799 | 0.5714 | 0.4718 | 0.5371 | 
+| T5-NTR           | None             | 1-1  | 0.3154 | 0.5920 | 0.4850 | 0.5444 |
+| T5-NTR           | None             | 3-0  | 0.2725 | 0.5676 | 0.4712 | 0.5347 |
+| T5-NTR           | None             | 3-1  | 0.3195 | 0.6018 | 0.4916 | 0.5551 |
+| T5-NTR           | None             | 5-0  | 0.2721 | 0.5632 | 0.4639 | 0.5318 |
+| T5-NTR           | None             | 5-1  | 0.3216 | 0.6069 | 0.4978 | 0.5595 |
 |------------------|------------------|------|--------|--------|--------|--------|
-| T5-NTR           | Selected (truth) | 1-0  | 
-| T5-NTR           | Selected (truth) | 3-0  | 0.3488 | 0.5356 | 0.4455 | 0.5154 |
-| T5-NTR           | Selected (truth) | 3-1  | 0.2386 | 0.3964 | 0.3068 | 0.3785 |
-| T5-NTR           | Selected (truth) | 3-2  ||
+| T5-NTR           | Selected (truth) | 0-0  | 0.2981 | 0.5768 | 0.4773 | 0.5361 |
+| T5-NTR           | Selected (truth) | 1-0  | 0.2934 | 0.5676 | 0.4683 | 0.5265 | 
+| T5-NTR           | Selected (truth) | 1-1  | 0.3332 | 0.6058 | 0.5022 | 0.5523 |
+| T5-NTR           | Selected (truth) | 3-0  | 0.2888 | 0.5732 | 0.4772 | 0.5344 |
+| T5-NTR           | Selected (truth) | 3-1  | 0.3305 | 0.6062 | 0.5000 | 0.5525 |
+| T5-NTR           | Selected (truth) | 5-0  | 0.2886 | 0.5733 | 0.4743 | 0.5385 |
+| T5-NTR           | Selected (truth) | 5-1  | 0.3319 | 0.6109 | 0.5038 | 0.5557 |
 |------------------|------------------|------|--------|--------|--------|--------|
 | Function-flat    | None             | 3    | 0.6359 | 0.7941 | 0.7314 | 0.7881 |
 | Function-flat    | None             | 5    | 0.6385 | 0.7805 | 0.7158 | 0.7732 |
