@@ -76,8 +76,8 @@ if __name__ == "__main__":
                 tokenizer=tokenizer,
                 max_src_length=args.max_src_length,
                 max_tgt_length=args.max_tgt_length,
-                n_conversations=args.n_conversations,
-                n_responses=args.n_responses
+                max_n_conversations=args.n_conversations,
+                max_n_responses=args.n_responses
         )
     else:
         model = FiDT5_flat.from_pretrained(args.model_path)
