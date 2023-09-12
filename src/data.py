@@ -302,8 +302,4 @@ class DataCollatorForNTR:
         target_ids = outputs['input_ids'].masked_fill(~target_mask, -100)
         inputs['labels'] = target_ids
 
-        print(contexts[0:2])
-        print(utterances[0:2])
-        print(targets[0:2])
-
         return inputs
