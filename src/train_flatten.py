@@ -61,8 +61,8 @@ def main():
             dataset['test'] = get_qrecc_dataset(data_args.eval_file)['train']
             # [NOTE] We use trec as evaluation
             dataset['test'] = dataset['test'].filter(
-                    lambda example: example['Conversation_source'] == 'trec'
-            )
+                    lambda example: example['Conversation_source'] != 'trec'
+            ).shuffle(seed=42).select(list(range(1000)))
 
         else:
             from data import get_ikat_dataset
