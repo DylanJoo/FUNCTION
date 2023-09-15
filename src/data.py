@@ -75,7 +75,7 @@ class DataCollatorForFunctionFlatten:
     pad_to_multiple_of: Optional[int] = None
     padding: Union[bool, str, PaddingStrategy] = True
     truncation: Union[bool, str] = True
-    max_src_length: Optional[int] = 288
+    max_src_length: Optional[int] = 256
     max_tgt_length: Optional[int] = 32
     n_conversations: Optional[int] = 1
     n_statements: Optional[int] = 0
@@ -97,9 +97,6 @@ class DataCollatorForFunctionFlatten:
         # preparing source/target
         sources, targets = [], []
         for batch in features:
-            ## request (focal question/utterance)
-            sources.append(self.instruction_prefix.format(batch['Question']))
-
             ## Context
             ### user statements
             avail_statements = [\
@@ -108,7 +105,6 @@ class DataCollatorForFunctionFlatten:
             for i, statement in enumerate(avail_statements[:self.n_statements]):
                 sources.append(self.conversation_prefix.format(*statement))
 
-            ### user-system conversation # reverse it (the last n turns)
             avail_conversations = [\
                     c for c in batch['Conversation'] if len(c) == 2\
                     ][-self.n_conversations:]
@@ -116,6 +112,9 @@ class DataCollatorForFunctionFlatten:
 
             for i, conversation in enumerate(avail_conversations[:self.n_conversations]):
                 sources.append(self.conversation_prefix.format(*conversation))
+
+            ### request (focal question/utterance)
+            sources.append(self.instruction_prefix.format(batch['Question']))
 
             ## rewritten questions
             targets.append(batch['Rewrite'])
@@ -143,12 +142,12 @@ class DataCollatorForFunctionFlatten:
         ## - input_ids: (BN, L)
         ## - attention_mask: (B, NL)
         ## - labels: (B, L_tgt)
-        N = self.n_conversations + self.n_statements
+        N = 1+ self.n_conversations + self.n_statements
         inputs['input_ids'] = inputs['input_ids'].view(
-                -1, 1+N, inputs['input_ids'].size(-1)
+                -1, N, inputs['input_ids'].size(-1)
         )
         inputs['attention_mask'] = inputs['attention_mask'].view(
-                -1, (1+N) * inputs['attention_mask'].size(-1)
+                -1, N * inputs['attention_mask'].size(-1)
         )
         return inputs
 
