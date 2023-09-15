@@ -95,3 +95,11 @@ rewrite_by_t5ntr:
 		--num_beams 5 \
 		--max_src_length 512 \
 		--max_tgt_length 256
+
+index_bm25:
+	python3 -m pyserini.index.lucene \
+	  --collection JsonCollection \
+	  --input /home/jhju/datasets/qrecc/collection-paragraph/commoncrawl/\
+	  --index /home/jhju/indexes/qrecc-commoncrawl-lucene/  \
+	  --generator DefaultLuceneDocumentGenerator \
+	  --threads 8

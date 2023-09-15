@@ -58,9 +58,12 @@ def main():
     if training_args.do_eval:
         if 'qrecc' in data_args.eval_file:
             # qrecc test
-            dataset['test'] = get_qrecc_dataset(
-                    data_args.eval_file
-            )['train'].shuffle(seed=42).select(list(range(300)))
+            dataset['test'] = get_qrecc_dataset(data_args.eval_file)['train']
+            # [NOTE] We use trec as evaluation
+            dataset['test'] = dataset['test'].filter(
+                    lambda example: example['Conversation_source'] == 'trec'
+            )
+
         else:
             from data import get_ikat_dataset
             # ikat train

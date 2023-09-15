@@ -1,12 +1,11 @@
 import copy
 import torch
-from transformers import T5ForConditionalGeneration, T5Config
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn import CrossEntropyLoss
 from typing import Optional, Tuple, Union
+from transformers import T5ForConditionalGeneration, T5Config
 from transformers.modeling_outputs import  Seq2SeqLMOutput, BaseModelOutput
-from transformers.models.t5.modeling_t5 import T5Stack
+from .fidt5_revised import FiDT5DecoderStack, FiDT5EncoderStackForCompressed
 
 class FiDT5(T5ForConditionalGeneration):
     def __init__(self, config: T5Config):
@@ -19,13 +18,13 @@ class FiDT5(T5ForConditionalGeneration):
         encoder_config.is_decoder = False
         encoder_config.use_cache = False
         encoder_config.is_encoder_decoder = False
-        self.encoder = FiDT5Stack(encoder_config, self.shared) # replace 
+        self.encoder = FiDT5EncoderStackForCompressed(encoder_config, self.shared) # replace 
 
         decoder_config = copy.deepcopy(config)
         decoder_config.is_decoder = True
         decoder_config.is_encoder_decoder = False
         decoder_config.num_layers = config.num_decoder_layers
-        self.decoder = T5Stack(decoder_config, self.shared)
+        self.decoder = FiDT5DecoderStack(decoder_config, self.shared)
 
         self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)
 
@@ -80,60 +79,3 @@ class FiDT5(T5ForConditionalGeneration):
         )
         mask_expanded = torch.cat([mask, additional_mask], -1)
         return mask_expanded
-
-class FiDT5Stack(T5Stack):
-
-    def forward(self, 
-                input_ids, attention_mask, 
-                input_ids_conv, attention_mask_conv,
-                **kwargs):
-        """ 
-        FUNCTION: FUsion-iN-ConversaTION
-        Wrap/unwrap input/ouput with this class (replace t5-encoder) 
-
-        :param input_ids: the input for focal request. (B, L)
-        :param attention_mask: the mask for focal request. (B L)
-        :param input_ids_conv: the tokenized input ids of conversations.
-        :param attention_mask_conv: the attention mask of conversations.
-        """
-        ## Sizes
-        B = input_ids.size(0)
-        N = input_ids_conv.size(0) // B
-        L = input_ids_conv.size(1)
-        self.n_conversations = N
-
-        ## Utterances 
-        encoder_outputs = super().forward(
-                input_ids=input_ids,
-                attention_mask=attention_mask, 
-                **kwargs
-        )
-
-        ## Conversations
-        encoder_outputs_conv = super().forward(
-                input_ids=input_ids_conv,
-                attention_mask=attention_mask_conv, 
-                **kwargs
-        )
-        ### Convert conversational token embeddings
-        ### into conversational sentence embeddins
-        ### B N L H  --> B N H (mean embeddings)
-        conversation_embeds = \
-                encoder_outputs_conv['last_hidden_state'].view(B, N, L, -1)
-        conversation_attn_mask = attention_mask_conv.view(B, N, L)
-        compressed_embeds = self.mean_pooling(
-                conversation_embeds, conversation_attn_mask, 2
-        ) 
-
-        ## [MERGE] combine the token-level 
-        encoder_outputs['last_hidden_state'] = torch.cat([
-            encoder_outputs['last_hidden_state'], 
-            compressed_embeds
-        ], dim=1)
-
-        return encoder_outputs
-
-    @staticmethod
-    def mean_pooling(token_embeddings, attention_mask, dim=1):
-        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-        return torch.sum(token_embeddings * input_mask_expanded, dim=dim) / torch.clamp(input_mask_expanded.sum(dim), min=1e-9)
