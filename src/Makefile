@@ -15,7 +15,7 @@ train_flatten:
 	        --per_device_train_batch_size 16 \
 	        --max_src_length 128 \
 	        --max_tgt_length 64 \
-	        --learning_rate 1e-4 \
+	        --learning_rate 1e-3 \
 	        --evaluation_strategy steps \
 	        --max_steps 10000 \
 	        --save_steps 5000 \
@@ -24,10 +24,10 @@ train_flatten:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
-	        --warmup_steps 0 \
-	        --lr_scheduler_type linear \
-		--instruction_prefix 'Rewrite the user utterance based on previous user-system conversations. user: {}' \
-		--conversation_prefix 'conversation: user: {0} system: {1}' \
+	        --warmup_steps 1000 \
+	        --lr_scheduler_type constant \
+		--instruction_prefix 'Based on previous conversations, please rewrite the user utterance: {}' \
+		--conversation_prefix 'Conversation: user: {0} system: {1}' \
 	        --report_to wandb
 
 train_ntr:
