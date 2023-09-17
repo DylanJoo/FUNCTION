@@ -5,19 +5,19 @@ BASE=google/flan-t5-base
 
 # 22 G
 train_flatten:
-	export CUDA_VISIBLE_DEVICES=1; python3 train_flatten.py \
+	python3 train_flatten.py \
      		--model_name_or_path ${BASE} \
      		--tokenizer_name ${BASE} \
 		--config_name ${BASE} \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/function-base-flatten \
-	        --per_device_train_batch_size 16 \
-	        --max_src_length 128 \
+	        --per_device_train_batch_size 8 \
+	        --max_src_length 256 \
 	        --max_tgt_length 64 \
-	        --learning_rate 1e-3 \
+	        --learning_rate 1e-4 \
 	        --evaluation_strategy steps \
-	        --max_steps 10000 \
+	        --max_steps 20000 \
 	        --save_steps 5000 \
 	        --eval_steps 500 \
 	        --do_train \
@@ -25,25 +25,25 @@ train_flatten:
 	        --optim adafactor \
 	        --n_conversations 6 \
 	        --warmup_steps 1000 \
-	        --lr_scheduler_type constant \
-		--instruction_prefix 'Based on previous conversations, please rewrite the user utterance: {}' \
-		--conversation_prefix 'Conversation: user: {0} system: {1}' \
+		--lr_scheduler_type linear \
+		--instruction_prefix 'Based on previous conversations, rewrite the user utterance: {} into a standalone query.' \
+		--conversation_prefix 'user: {0} system: {1}' \
 	        --report_to wandb
 
 train_ntr:
-	export CUDA_VISIBLE_DEVICES=0; python3 train_ntr.py \
+	python3 train_ntr.py \
      		--model_name_or_path ${BASE} \
      		--tokenizer_name ${BASE} \
 		--config_name ${BASE} \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/ntr-base \
-	        --per_device_train_batch_size 16 \
+	        --per_device_train_batch_size 8 \
 	        --max_src_length 512 \
 	        --max_tgt_length 64 \
-	        --learning_rate 1e-4 \
+	        --learning_rate 1e-3 \
 	        --evaluation_strategy steps \
-	        --max_steps 10000 \
+	        --max_steps 20000 \
 	        --save_steps 5000 \
 	        --eval_steps 500 \
 	        --do_train \

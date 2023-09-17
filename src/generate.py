@@ -58,7 +58,7 @@ if __name__ == "__main__":
     config = AutoConfig.from_pretrained(args.model_name)
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
-    ## checkpoints and }atacollator
+    ## checkpoints 
     if 'compressed' in args.model_path.lower():
         model = FiDT5_comp.from_pretrained(args.model_path)
         data_collator = DataCollatorForFunctionCompressed(
@@ -70,7 +70,7 @@ if __name__ == "__main__":
                 instruction_prefix=args.instruction_prefix,
                 conversation_prefix=args.conversation_prefix
         )
-    elif 'castorini' in args.model_path.lower():
+    elif ('castorini' in args.model_path.lower()) or ('ntr' in args.model_path.lower()):
         model = T5ForConditionalGeneration.from_pretrained(args.model_path)
         data_collator = DataCollatorForNTR(
                 tokenizer=tokenizer,
