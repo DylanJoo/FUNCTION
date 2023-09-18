@@ -47,6 +47,7 @@ A popular baseline is T5 fine-tuned on CANARD dataset. Please refer to their [pa
 ### In-domain evaluation
 The evaluation dataset is qrecc-test; it was based on open-domain conversational question answering dataset. 
 
+## N-gram evaluation
 | Model |\# lag Conv. (Q-R) |  BLEU  | ROUGE1 | ROUGE2 | ROUGEL | d-ROUGE1 | d-ROUGE2 | d-ROUGEL | 
 |:---------------|:---------|--------|--------|--------|--------|----------|----------|----------|
 | Raw utterance  | None     | 0.3741 | 0.6990 | 0.5318 | 0.6973 | 0.0000   | 0.0000   | 0.0000   |
@@ -61,3 +62,19 @@ The evaluation dataset is qrecc-test; it was based on open-domain conversational
 | Function-flat  | 6-6      | 0.6216 | 0.8364 | 0.7391 | 0.8238 | 0.2608   | 0.1428   | 0.2575   |
 |----------------|----------|--------|--------|--------|--------|----------|----------|----------|
 
+## Retreival evalauation
+| Model |\# lag Conv. (Q-R) |  BLEU  | ROUGE1 | ROUGE2 | 
+|:---------------|:---------|--------|--------|--------|
+| Raw utterance  | None     | 0.3741 | 0.6990 | 0.5318 |
+|----------------|----------|--------|--------|--------|
+| T5-NTR         | 3-3      | 
+| T5-NTR         | 6-3      | 
+|----------------|----------|--------|--------|--------|
+| Baseline       | 3-3      | 0.2770 | 0.4467 | 0.7440 |
+| Baseline       | 6-3      |
+|----------------|----------|--------|--------|--------|
+| Function-flat  | 3-3      | 
+| Function-flat  | 6-6      | 
+| Baseline       | -        | 0.3140 | 0.5018 | 0.8161 |
+| Manual         | -        | 0.3889 | 0.6116 | 0.9631 |
+|----------------|----------|--------|--------|--------|

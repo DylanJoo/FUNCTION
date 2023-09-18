@@ -13,6 +13,6 @@ qrels=dataset/scai_qrecc_test_qrel.trec
 for run in runs/qrecc_test/*trec;do
     echo ${run##*/}
     trec_eval-9.0.7/trec_eval \
-        -c -m recall.10,100 recip_rank ${qrels} ${run} |\
+        -c -m recall.10,100 -m recip_rank ${qrels} ${run} |\
         cut -f3 | sed ':a; N; $!ba; s/\n/|/g'
 done
