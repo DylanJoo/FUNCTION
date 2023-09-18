@@ -3,6 +3,14 @@ EVAL_FILE=/home/jhju/datasets/qrecc/qrecc_test.json
 TEST_FILE=dataset/2023_test_topics.json
 BASE=google/flan-t5-base
 
+preprocess:
+	# convert naacl baseline to run
+	python3 utils/convert_scai_baseline_to_run.py \
+	        --scai-baseline-json dataset/scai-qrecc21-naacl-baseline.json
+	# convert qrels to trec
+	python3 utils/convert_scai_qrels_to_trec.py \
+	        --scai-qrels-json dataset/scai_qrecc_test_qrel.json 
+
 # 22 G
 train_flatten:
 	python3 train_flatten.py \
@@ -99,7 +107,7 @@ rewrite_by_t5ntr:
 index_bm25:
 	python3 -m pyserini.index.lucene \
 	  --collection JsonCollection \
-	  --input /home/jhju/datasets/qrecc/collection-paragraph/commoncrawl/\
+	  --input /home/jhju/datasets/qrecc/collection-paragraph/ \
 	  --index /home/jhju/indexes/qrecc-commoncrawl-lucene/  \
 	  --generator DefaultLuceneDocumentGenerator \
 	  --threads 8
