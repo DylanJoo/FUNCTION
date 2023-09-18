@@ -314,7 +314,7 @@
 {"qid": "trec_35_6", "question": "When did indoor versions become common", "generated_question": "When did indoor versions of toilets become common", "rewritten_question": "When did indoor versions of toilets become common?"}
 {"qid": "trec_35_7", "question": "How many types are there", "generated_question": "How many types of toilets are there", "rewritten_question": "How many types of toilets are there?"}
 {"qid": "trec_35_8", "question": "Why are they so important for society", "generated_question": "Why are toilets so important for society", "rewritten_question": "Why are toilets so important for society?"}
-{"qid": "trec_35_9", "question": "What is their role in film", "generated_question": "What is the use of a toilet in film", "rewritten_question": "What is the role of toilets in film?"}
+{"qid": "trec_35_9", "question": "What is their role in film", "generated_question": "What is a toilet's role in film", "rewritten_question": "What is the role of toilets in film?"}
 {"qid": "trec_36_1", "question": "What is the US Electoral College", "generated_question": "What is the US Electoral College", "rewritten_question": "What is the US Electoral College?"}
 {"qid": "trec_36_2", "question": "How does it work", "generated_question": "How does the Electoral College work", "rewritten_question": "How does the US Electoral College work?"}
 {"qid": "trec_36_3", "question": "Tell me about its creation", "generated_question": "Tell me about the US Electoral College's creation", "rewritten_question": "Tell me about the US Electoral College creation."}
@@ -657,12 +657,12 @@
 {"qid": "trec_71_12", "question": "Where can we see them", "generated_question": "Where can we see the blue whales", "rewritten_question": "Where can we see blue whales?"}
 {"qid": "trec_72_1", "question": "What do Spanish people do on Christmas day", "generated_question": "What do Spanish people do on Christmas day", "rewritten_question": "What do Spanish people do on Christmas day?"}
 {"qid": "trec_72_2", "question": "What do they eat for dinner", "generated_question": "What do they eat for dinner", "rewritten_question": "What do Spanish people eat for Christmas dinner?"}
-{"qid": "trec_72_3", "question": "How about on Christmas eve", "generated_question": "How about Christmas eve?", "rewritten_question": "What do Spanish people eat on Christmas eve?"}
+{"qid": "trec_72_3", "question": "How about on Christmas eve", "generated_question": "How about on Christmas eve?", "rewritten_question": "What do Spanish people eat on Christmas eve?"}
 {"qid": "trec_72_4", "question": "What is the Christmas Lottery", "generated_question": "What is the Christmas Lottery", "rewritten_question": "What is the Spanish Christmas Lottery?"}
-{"qid": "trec_72_5", "question": "How does the drawing work", "generated_question": "How does the drawing of Christmas work", "rewritten_question": "How does the Spanish Christmas Lottery drawing work?"}
+{"qid": "trec_72_5", "question": "How does the drawing work", "generated_question": "How does the drawing for the Spanish Christmas Festival work", "rewritten_question": "How does the Spanish Christmas Lottery drawing work?"}
 {"qid": "trec_72_6", "question": "How are the tickets sold", "generated_question": "How are the tickets sold for the Spanish Christmas Lottery", "rewritten_question": "How are the Spanish Christmas Lottery tickets sold?"}
 {"qid": "trec_72_7", "question": "What is Tio de Nadal", "generated_question": "What is Tio de Nadal?", "rewritten_question": "What is Tio de Nadal?"}
-{"qid": "trec_72_8", "question": "How did this tradition start", "generated_question": "How did the Spanish Christmas lottery tradition start", "rewritten_question": "How did the tradition of Tio de Nadal start?"}
+{"qid": "trec_72_8", "question": "How did this tradition start", "generated_question": "How did the Spanish Christmas lottery tradition start?", "rewritten_question": "How did the tradition of Tio de Nadal start?"}
 {"qid": "trec_72_9", "question": "How do they celebrate Three Kings Day", "generated_question": "How do the Spanish people celebrate Three Kings Day", "rewritten_question": "How do Spanish people celebrate Three Kings Day?"}
 {"qid": "trec_72_10", "question": "What cakes are traditional", "generated_question": "What cakes are traditional in the Spanish Christmas market", "rewritten_question": "What Spanish cakes are traditional for Three Kings Day?"}
 {"qid": "trec_73_1", "question": "Who is the most successful pirate of all time", "generated_question": "Who is the most successful pirate of all time", "rewritten_question": "Who is the most successful pirate of all time?"}
