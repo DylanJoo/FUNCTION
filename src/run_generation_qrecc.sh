@@ -48,19 +48,37 @@ MODEL_PATH=castorini/t5-base-canard
 
 # Funtion-base-comp. 
 # n-m contains n user's utterances and m system's
-for N_HISTORY in 6 10; do
+# for N_HISTORY in 6 10; do
+#     python3 generate.py \
+#         --model_name google/flan-t5-base \
+#         --model_path models/ckpt/function-base-compressed/checkpoint-15000 \
+#         --input_file ${EVAL_FILE} \
+#         --output_jsonl results/qrecc_test/function_comp.history_${N_HISTORY}.jsonl \
+#         --device cuda \
+#         --batch_size 16 \
+#         --instruction_prefix 'Rewrite the user utterance: {}, based on previous conversations. conversation: ' \
+#         --conversation_prefix 'user: {0} system: {1}' \
+#         --n_conversations ${N_HISTORY} \
+#         --num_beams 5 \
+#         --max_src_length 128 \
+#         --max_tgt_length 32 \
+#         --max_src_conv_length 256
+# done
+
+# Funtion-base-flatten. 
+# n-m contains n user's utterances and m system's
+for N_HISTORY in 3 6; do
     python3 generate.py \
         --model_name google/flan-t5-base \
-        --model_path models/ckpt/function-base-compressed/checkpoint-15000 \
+        --model_path models/ckpt/function-base-flatten-qa/checkpoint-15000 \
         --input_file ${EVAL_FILE} \
-        --output_jsonl results/qrecc_test/function_comp.history_${N_HISTORY}.jsonl \
+        --output_jsonl results/qrecc_test/function_flat-qa.history_${N_HISTORY}.jsonl \
         --device cuda \
         --batch_size 16 \
-        --instruction_prefix 'Rewrite the user utterance: {}, based on previous conversations. conversation: ' \
+        --instruction_prefix 'Based on previous conversations and raw utterance: {}, generate the following user question and system response' \
         --conversation_prefix 'user: {0} system: {1}' \
         --n_conversations ${N_HISTORY} \
         --num_beams 5 \
-        --max_src_length 128 \
-        --max_tgt_length 32 \
-        --max_src_conv_length 256
+        --max_src_length 512 \
+        --max_tgt_length 32
 done

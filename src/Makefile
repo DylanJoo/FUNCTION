@@ -37,6 +37,32 @@ train_flatten:
 		--instruction_prefix 'Based on previous conversations, rewrite the user utterance: {} into a standalone query.' \
 		--conversation_prefix 'user: {0} system: {1}' \
 	        --report_to wandb
+# 22 G
+train_flatten_qa:
+	python3 train_flatten.py \
+     		--model_name_or_path ${BASE} \
+     		--tokenizer_name ${BASE} \
+		--config_name ${BASE} \
+     		--train_file ${TRAIN_FILE} \
+     		--eval_file ${EVAL_FILE} \
+		--output_dir models/ckpt/function-base-flatten-qa \
+	        --per_device_train_batch_size 8 \
+	        --max_src_length 256 \
+	        --max_tgt_length 64 \
+	        --learning_rate 1e-4 \
+	        --evaluation_strategy steps \
+	        --max_steps 20000 \
+	        --save_steps 5000 \
+	        --eval_steps 500 \
+	        --do_train \
+	        --do_eval \
+	        --optim adafactor \
+	        --n_conversations 6 \
+	        --warmup_steps 1000 \
+		--lr_scheduler_type linear \
+		--instruction_prefix 'Based on previous conversations and raw utterance: {}, generate the following user question and system response' \
+		--conversation_prefix 'user: {0} system: {1}' \
+	        --report_to wandb
 
 train_ntr:
 	python3 train_ntr.py \

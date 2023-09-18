@@ -110,14 +110,15 @@ class DataCollatorForFunctionFlatten:
                     ][-self.n_conversations:]
             avail_conversations += [["<pad>", "<pad>"]] * self.n_conversations
 
-            for i, conversation in enumerate(avail_conversations[:self.n_conversations]):
-                sources.append(self.conversation_prefix.format(*conversation))
-
             ### request (focal question/utterance)
             sources.append(self.instruction_prefix.format(batch['Question']))
 
+            for i, conversation in enumerate(avail_conversations[:self.n_conversations]):
+                sources.append(self.conversation_prefix.format(*conversation))
+
             ## rewritten questions
-            targets.append(batch['Rewrite'])
+            # targets.append(batch['Rewrite'])
+            targets.append(f"user: {batch['Rewrite']} system: {batch['Answer']}")
 
         # tokenizing src/tgt
         inputs = self.tokenizer(
