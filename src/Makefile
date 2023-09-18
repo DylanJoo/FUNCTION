@@ -56,30 +56,30 @@ train_ntr:
 
 # 17 G
 train_compressed:
-	export CUDA_VISIBLE_DEVICES=0; python3 train_compressed.py \
+	python3 train_compressed.py \
      		--model_name_or_path ${BASE} \
      		--tokenizer_name ${BASE} \
 		--config_name ${BASE} \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/function-base-compressed \
-	        --per_device_train_batch_size 16 \
-	        --max_src_length 32 \
+	        --per_device_train_batch_size 8 \
+	        --max_src_length 64 \
 	        --max_tgt_length 64 \
-	        --max_src_conv_length 128 \
+	        --max_src_conv_length 256 \
 	        --learning_rate 1e-4 \
 	        --evaluation_strategy steps \
-	        --max_steps 10000 \
+	        --max_steps 20000 \
 	        --save_steps 5000 \
 	        --eval_steps 500 \
 	        --do_train \
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 10 \
-	        --warmup_steps 0 \
-		--instruction_prefix 'Rewrite the user utterance based on previous user-system conversations. user: {}' \
-		--conversation_prefix 'conversation: user: {0} system: {1}' \
+	        --warmup_steps 1000 \
 	        --lr_scheduler_type linear \
+		--instruction_prefix 'Rewrite the user utterance: {}, based on previous conversations. conversation: ' \
+		--conversation_prefix 'user: {0} system: {1}' \
 	        --report_to wandb
 
 rewrite_by_t5ntr:

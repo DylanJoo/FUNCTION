@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 from transformers.models.t5.modeling_t5 import (
     T5Stack, 
     T5Block, 
