@@ -2,6 +2,9 @@ models/ckpt/
 **/__pycache__/
 wandb/
 logs/
-datasets/
 *swp
 **/*.txt
+
+trec_eval-9.0.7/
+runs/
+dataset/scai-qrecc21-naacl-baseline.json
