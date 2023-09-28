@@ -78,7 +78,6 @@ class DataCollatorForFunctionFlatten:
     max_src_length: Optional[int] = 256
     max_tgt_length: Optional[int] = 32
     n_conversations: Optional[int] = 1
-    n_statements: Optional[int] = 0
     instruction_prefix: Optional[str] = ''
     conversation_prefix: Optional[str] = ''
 
@@ -97,28 +96,19 @@ class DataCollatorForFunctionFlatten:
         # preparing source/target
         sources, targets = [], []
         for batch in features:
-            ## Context
-            ### user statements
-            avail_statements = [\
-                    c+["<pad>"] for c in batch['Conversation'] if len(c) == 1]
-            avail_statements += [["<pad>", "<pad>"]] * self.n_statements
-            for i, statement in enumerate(avail_statements[:self.n_statements]):
-                sources.append(self.conversation_prefix.format(*statement))
-
-            avail_conversations = [\
-                    c for c in batch['Conversation'] if len(c) == 2\
-                    ][-self.n_conversations:]
-            avail_conversations += [["<pad>", "<pad>"]] * self.n_conversations
-
-            ### request (focal question/utterance)
+            ### Utterance 
             sources.append(self.instruction_prefix.format(batch['Question']))
 
-            for i, conversation in enumerate(avail_conversations[:self.n_conversations]):
+            ## Context
+            avail_conversations = [c for c in batch['Conversation'] if len(c) == 2]
+            avail_conversations = avail_conversations[-self.n_conversations:]
+            avail_conversations += [["", ""]] * (self.n_conversations-len(avail_conversations))
+            for i, conversation in enumerate(avail_conversations):
                 sources.append(self.conversation_prefix.format(*conversation))
 
-            ## rewritten questions
-            # targets.append(batch['Rewrite'])
-            targets.append(f"user: {batch['Rewrite']} system: {batch['Answer']}")
+            ## Rewritten 
+            targets.append(batch['Rewrite'])
+            # targets.append(f"user: {batch['Rewrite']} system: {batch['Answer']}")
 
         # tokenizing src/tgt
         inputs = self.tokenizer(
@@ -143,7 +133,7 @@ class DataCollatorForFunctionFlatten:
         ## - input_ids: (BN, L)
         ## - attention_mask: (B, NL)
         ## - labels: (B, L_tgt)
-        N = 1+ self.n_conversations + self.n_statements
+        N = 1 + self.n_conversations 
         inputs['input_ids'] = inputs['input_ids'].view(
                 -1, N, inputs['input_ids'].size(-1)
         )
@@ -162,7 +152,6 @@ class DataCollatorForFunctionCompressed:
     max_tgt_length: Optional[int] = 32
     max_src_conv_length: Optional[int] = 128
     n_conversations: Optional[int] = 1
-    n_statements: Optional[int] = 0
     instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. Request: {} Conversation: '
     conversation_prefix: Optional[str] = 'user: {0} sytem: {1}'
 
@@ -184,18 +173,10 @@ class DataCollatorForFunctionCompressed:
             sources.append(self.instruction_prefix.format(batch['Question']))
 
             ## Contexts
-            ### user statements
-            avail_statements = [\
-                    c+["<pad>"] for c in batch['Conversation'] if len(c) == 1]
-            avail_statements += [["<pad>", "<pad>"]] * self.n_statements
-            for i, statement in enumerate(avail_statements[:self.n_statements]):
-                sources_conv.append( self.conversation_prefix.format(**statement))
-
-            ### user-system conversation 
             avail_conversations = [\
                     c for c in batch['Conversation'] if len(c) == 2\
                     ][-self.n_conversations:]
-            avail_conversations += [["<pad>", "<pad>"]] * self.n_conversations
+            avail_conversations += [["", ""]] * self.n_conversations
             for i, conversation in enumerate(avail_conversations[:self.n_conversations]):
                 sources_conv.append(self.conversation_prefix.format(*conversation))
 
@@ -255,22 +236,16 @@ class DataCollatorForNTR:
         contexts, utterances = [], []
         targets = []
         for batch in features:
-            ## Focal question, utterance
             utterance = batch['Question']
 
             ## Contexts
-            ## user's statement or empty (if it has)
-            history_statement = [c[0] for c in batch['Conversation'] if len(c) == 1]
             history = []
-
-            ## user-system conversation 
             avail_conversations = [\
                     c for c in batch['Conversation'] if len(c) == 2\
                     ][-self.max_n_conversations:]
 
             i = 0
             while i < len(avail_conversations):
-                ## [NOTE] pop from the last conversation
                 conversation = avail_conversations.pop()
 
                 # user system conversation
@@ -302,4 +277,64 @@ class DataCollatorForNTR:
         target_ids = outputs['input_ids'].masked_fill(~target_mask, -100)
         inputs['labels'] = target_ids
 
+        return inputs
+
+@dataclass
+class DataCollatorForFunction:
+    tokenizer: Union[PreTrainedTokenizerBase] = None
+    pad_to_multiple_of: Optional[int] = None
+    padding: Union[bool, str, PaddingStrategy] = True
+    truncation: Union[bool, str] = True
+    max_src_length: Optional[int] = 256
+    max_tgt_length: Optional[int] = 32
+    n_conversations: Optional[int] = 1
+    instruction_prefix: Optional[str] = ''
+
+    def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
+        sources, targets = [], []
+        for batch in features:
+
+            ## context
+            avail_conversations = [\
+                    [i]+c for i, c in enumerate(batch['Conversation']) if len(c) == 2\
+                    ][-self.n_conversations:]
+            avail_conversations += [["", "", ""]] * self.n_conversations
+            for conversation in avail_conversations[:self.n_conversations]:
+                sources.append(self.instruction_prefix.format(
+                    batch['Question'], conversation[0], conversation[1], conversation[2]
+                ))
+
+            ## rewritten questions
+            targets.append(batch['Rewrite'])
+
+        # tokenizing src/tgt
+        inputs = self.tokenizer(
+                sources,
+                max_length=self.max_src_length,
+                truncation=self.truncation,
+                padding=self.padding,
+                return_tensors='pt'
+        )
+        outputs = self.tokenizer(
+                targets,
+                max_length=self.max_tgt_length,
+                truncation=self.truncation,
+                padding=self.padding,
+                return_tensors='pt'
+        )
+        target_mask = outputs['attention_mask'].bool()
+        target_ids = outputs['input_ids'].masked_fill(~target_mask, -100)
+        inputs['labels'] = target_ids
+
+        # postprocess
+        ## - input_ids: (BN, L)
+        ## - attention_mask: (B, NL)
+        ## - labels: (B, L_tgt)
+        N = self.n_conversations
+        inputs['input_ids'] = inputs['input_ids'].view(
+                -1, N, inputs['input_ids'].size(-1)
+        )
+        inputs['attention_mask'] = inputs['attention_mask'].view(
+                -1, N * inputs['attention_mask'].size(-1)
+        )
         return inputs

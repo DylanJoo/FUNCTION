@@ -10,7 +10,7 @@ from datasets import load_dataset
 
 # customized modules
 from models import FiDT5_flat
-from data import DataCollatorForFunctionFlatten, get_qrecc_dataset
+from data import DataCollatorForFunction, get_qrecc_dataset
 from arguments import ModelArgs, DataArgs, TrainArgs
 
 import os
@@ -39,13 +39,12 @@ def main():
 
     # Data
     ## Datacollator
-    data_collator = DataCollatorForFunctionFlatten(
+    data_collator = DataCollatorForFunction(
             tokenizer=tokenizer, 
             max_src_length=data_args.max_src_length,
             max_tgt_length=data_args.max_tgt_length,
             n_conversations=model_args.n_conversations,
             instruction_prefix=training_args.instruction_prefix,
-            conversation_prefix=training_args.conversation_prefix,
             truncation=True,
             padding=True,
     )

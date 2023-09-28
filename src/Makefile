@@ -11,19 +11,17 @@ preprocess:
 	python3 utils/convert_scai_qrels_to_trec.py \
 	        --scai-qrels-json dataset/scai_qrecc_test_qrel.json 
 
-# 22 G
 train_flatten:
 	python3 train_flatten.py \
-     		--model_name_or_path ${BASE} \
-     		--tokenizer_name ${BASE} \
-		--config_name ${BASE} \
+     		--model_name_or_path google/flan-t5-base \
+     		--tokenizer_name google/flan-t5-base \
+		--config_name google/flan-t5-base \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/function-base-flatten \
 	        --per_device_train_batch_size 8 \
 	        --max_src_length 256 \
 	        --max_tgt_length 64 \
-	        --learning_rate 1e-4 \
 	        --evaluation_strategy steps \
 	        --max_steps 20000 \
 	        --save_steps 5000 \
@@ -32,24 +30,24 @@ train_flatten:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
-	        --warmup_steps 1000 \
+	        --learning_rate 1e-3 \
 		--lr_scheduler_type linear \
-		--instruction_prefix 'Based on previous conversations, rewrite the user utterance: {} into a standalone query.' \
+		--instruction_prefix 'Rewrite the user utterance into a standalone query based on previous conversations between the user and the system.' \
 		--conversation_prefix 'user: {0} system: {1}' \
 	        --report_to wandb
-# 22 G
-train_flatten_qa:
-	python3 train_flatten.py \
-     		--model_name_or_path ${BASE} \
-     		--tokenizer_name ${BASE} \
-		--config_name ${BASE} \
+
+
+train:
+	python3 train.py \
+     		--model_name_or_path google/flan-t5-base \
+     		--tokenizer_name google/flan-t5-base \
+		--config_name google/flan-t5-base \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
-		--output_dir models/ckpt/function-base-flatten-qa \
+		--output_dir models/ckpt/function-base \
 	        --per_device_train_batch_size 8 \
 	        --max_src_length 256 \
 	        --max_tgt_length 64 \
-	        --learning_rate 1e-4 \
 	        --evaluation_strategy steps \
 	        --max_steps 20000 \
 	        --save_steps 5000 \
@@ -58,24 +56,23 @@ train_flatten_qa:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
-	        --warmup_steps 1000 \
+	        --learning_rate 1e-3 \
 		--lr_scheduler_type linear \
-		--instruction_prefix 'Based on previous conversations and raw utterance: {}, generate the following user question and system response' \
-		--conversation_prefix 'user: {0} system: {1}' \
+		--instruction_prefix 'Rewrite the user query: {0} based on the context: turn number: {1} question: {2} response: {3}' \
 	        --report_to wandb
 
 train_ntr:
 	python3 train_ntr.py \
-     		--model_name_or_path ${BASE} \
-     		--tokenizer_name ${BASE} \
-		--config_name ${BASE} \
+     		--model_name_or_path google/flan-t5-base \
+     		--tokenizer_name google/flan-t5-base \
+		--config_name google/flan-t5-base \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
-		--output_dir models/ckpt/ntr-base \
+		--output_dir models/ckpt/ntr-base-qrecc \
 	        --per_device_train_batch_size 8 \
+	        --per_device_eval_batch_size 8 \
 	        --max_src_length 512 \
 	        --max_tgt_length 64 \
-	        --learning_rate 1e-3 \
 	        --evaluation_strategy steps \
 	        --max_steps 20000 \
 	        --save_steps 5000 \
@@ -84,16 +81,15 @@ train_ntr:
 	        --do_eval \
 	        --optim adafactor \
 	        --n_conversations 6 \
-	        --warmup_steps 0 \
+	        --learning_rate 1e-3 \
 	        --lr_scheduler_type linear \
 	        --report_to wandb
 
-# 17 G
 train_compressed:
 	python3 train_compressed.py \
-     		--model_name_or_path ${BASE} \
-     		--tokenizer_name ${BASE} \
-		--config_name ${BASE} \
+     		--model_name_or_path google/flan-t5-base \
+     		--tokenizer_name google/flan-t5-base \
+		--config_name google/flan-t5-base \
      		--train_file ${TRAIN_FILE} \
      		--eval_file ${EVAL_FILE} \
 		--output_dir models/ckpt/function-base-compressed \

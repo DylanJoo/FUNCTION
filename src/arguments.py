@@ -49,12 +49,10 @@ class TrainArgs(Seq2SeqTrainingArguments):
     learning_rate: Union[float] = field(default=1e-5)
     remove_unused_columns: bool = field(default=False)
     report_to: Optional[List[str]] = field(default=None)
-    warmup_steps: int = field(default=1000)
-    # lr_scheduler_type: Union[SchedulerType, str] = field(default="linear")
+    warmup_steps: int = field(default=0)
+    overwrite_output_dir: bool = field(default=True)
     # customized
     instruction_prefix: Optional[str] = field(default=None)
     conversation_prefix: Optional[str] = field(default=None)
     freeze_decoder: Optional[bool] = field(default=False)
-    # testing
-    testing: Optional[bool] = field(default=False)
 
