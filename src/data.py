@@ -152,7 +152,7 @@ class DataCollatorForFunctionCompressed:
     max_tgt_length: Optional[int] = 32
     max_src_conv_length: Optional[int] = 128
     n_conversations: Optional[int] = 1
-    instruction_prefix: Optional[str] = 'Rewrite the request according to the user-system conversation. Request: {} Conversation: '
+    instruction_prefix: Optional[str] = ''
     conversation_prefix: Optional[str] = 'user: {0} sytem: {1}'
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:

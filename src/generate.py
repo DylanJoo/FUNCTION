@@ -14,6 +14,7 @@ from transformers import (
 )
 from models import FiDT5_flat, FiDT5_comp
 from data import (
+    DataCollatorForFunction,
     DataCollatorForFunctionFlatten, 
     DataCollatorForFunctionCompressed,
     DataCollatorForNTR,
@@ -70,7 +71,7 @@ if __name__ == "__main__":
                 instruction_prefix=args.instruction_prefix,
                 conversation_prefix=args.conversation_prefix
         )
-    elif ('castorini' in args.model_path.lower()) or ('ntr' in args.model_path.lower()):
+    if ('castorini' in args.model_path.lower()) or ('ntr' in args.model_path.lower()):
         model = T5ForConditionalGeneration.from_pretrained(args.model_path)
         data_collator = DataCollatorForNTR(
                 tokenizer=tokenizer,
@@ -79,7 +80,8 @@ if __name__ == "__main__":
                 max_n_conversations=args.n_conversations,
                 max_n_responses=args.n_responses
         )
-    else:
+
+    if 'flat' in args.model_path.lower():
         model = FiDT5_flat.from_pretrained(args.model_path)
         data_collator = DataCollatorForFunctionFlatten(
                 tokenizer=tokenizer, 
@@ -88,6 +90,15 @@ if __name__ == "__main__":
                 n_conversations=args.n_conversations,
                 instruction_prefix=args.instruction_prefix,
                 conversation_prefix=args.conversation_prefix
+        )
+    else:
+        model = FiDT5_flat.from_pretrained(args.model_path)
+        data_collator = DataCollatorForFunction(
+                tokenizer=tokenizer, 
+                max_src_length=args.max_src_length,
+                max_tgt_length=args.max_tgt_length,
+                n_conversations=args.n_conversations,
+                instruction_prefix=args.instruction_prefix,
         )
 
     model.to(args.device)

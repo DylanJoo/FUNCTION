@@ -32,7 +32,7 @@ train_flatten:
 	        --n_conversations 6 \
 	        --learning_rate 1e-3 \
 		--lr_scheduler_type linear \
-		--instruction_prefix 'Rewrite the user utterance into a standalone query based on previous conversations between the user and the system.' \
+		--instruction_prefix 'Rewrite the user utterance {} into a standalone query based on previous conversations between the user and the system.' \
 		--conversation_prefix 'user: {0} system: {1}' \
 	        --report_to wandb
 
