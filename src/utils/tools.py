@@ -1,3 +1,6 @@
+def normalize(text):
+    return text
+
 def batch_iterator(iterable, size=1, return_index=False):
     l = len(iterable)
     for ndx in range(0, l, size):
