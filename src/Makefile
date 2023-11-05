@@ -11,6 +11,12 @@ preprocess:
 	python3 utils/convert_scai_qrels_to_trec.py \
 	        --scai-qrels-json dataset/scai_qrecc_test_qrel.json 
 
+prepare_wiki_corpus:
+	python3 utils/prepare_wiki_provenances.py \
+	        --wiki_corpus /home/jhju/datasets/wiki.dump.20181220/wiki_psgs_w100.jsonl \
+	        --qrecc_provenance /tmp2/jhju/CQG-for-Interactive-Search/data/qrecc_provenances_bm25.jsonl \
+	        --output_corpus wiki_corpus_for_qrecc.jsonl
+
 train_flatten:
 	python3 train_flatten.py \
      		--model_name_or_path google/flan-t5-base \
