@@ -28,11 +28,10 @@ train_flatten:
 	        --eval_steps 500 \
 	        --do_train \
 	        --do_eval \
-	        --optim adafactor \
 	        --n_conversations 6 \
 	        --learning_rate 1e-3 \
 		--lr_scheduler_type linear \
-		--instruction_prefix 'Rewrite the user utterance {} into a standalone query based on previous conversations between the user and the system.' \
+		--instruction_prefix 'Rewrite the ambiguous user utterance '{}' into a clear query refer to previous conversations between the user and the system.\n' \
 		--conversation_prefix 'user: {0} system: {1}' \
 	        --report_to wandb
 
@@ -54,12 +53,12 @@ train:
 	        --eval_steps 500 \
 	        --do_train \
 	        --do_eval \
-	        --optim adafactor \
 	        --n_conversations 6 \
 	        --learning_rate 1e-3 \
 		--lr_scheduler_type linear \
-		--instruction_prefix 'Rewrite the user query: {0} based on the context: turn number: {1} question: {2} response: {3}' \
-	        --report_to wandb
+		--instruction_prefix 'Rewrite the ambiguous user utterance '{0}' based on the context. Context: turn number: {1} user: {2} system: {3}' \
+	        --report_to wandb \
+	        --run_name function-enumerate
 
 train_ntr:
 	python3 train_ntr.py \
